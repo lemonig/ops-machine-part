@@ -1,0 +1,67 @@
+<div class="card_warp complain">
+  <nz-spin [nzSpinning]="isSpinning">
+    <ng-container>
+      <h1 class="module_title">核销扣减</h1>
+      <div class="query_warp">
+        <div>
+          <input style="width:180px;" nz-input placeholder="单据号、申请人" [(ngModel)]="searchName" />
+          <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
+            [(ngModel)]="startDate0"></nz-date-picker>
+          -
+          <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
+            [(ngModel)]="endDate0">
+          </nz-date-picker>
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+        </div>
+        <div>
+          <label nz-checkbox [(ngModel)]="isOwner" (ngModelChange)="handleCheckChange($event)">只看我的</label>
+
+
+
+        </div>
+
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)" [nzScroll]="{ x: '1500px' }">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>申请单号</th>
+              <th>申请人</th>
+
+              <th>存货编码</th>
+              <th>存货名称</th>
+              <th>规格</th>
+              <th>型号</th>
+              <th>核销类型</th>
+              <th>核销扣减</th>
+              <th>原因</th>
+              <th>操作人</th>
+              <th>操作时间</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.requisitionNumber}}</td>
+              <td>{{data.applicant}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+              <td>{{data.specification}}</td>
+              <td>{{data.modelNumber}}</td>
+              <td>{{data.verificationCategory}}</td>
+              <td>{{data.deductionQuantity}}</td>
+              <td>{{data.reason}}</td>
+              <td>{{data.operator}}</td>
+              <td>{{data.operatorTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+  </nz-spin>
+</div>

@@ -1,0 +1,158 @@
+<!--
+ * @Author: Jonny
+ * @Date: 2023-09-05 10:36:35
+ * @LastEditors: Jonny
+ * @LastEditTime: 2023-09-06 14:13:35
+ * @FilePath: \ops-machine-part\src\app\routes\setting\user\user.component.html
+-->
+<div class="setting_warp user">
+  <div>
+    <app-setting-menu order="3"></app-setting-menu>
+  </div>
+  <div class="card_warp">
+    <ng-container *ngIf="!showOperatePage">
+      <h1 class="module_title">用户权限</h1>
+      <div class="query_warp">
+        <div>
+          <button nz-button nz-button nzType="primary" (click)="add()">添加用户</button>
+        </div>
+        <div></div>
+      </div>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading" [(nzPageIndex)]="q.pageIndex"
+        [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th>序号</th>
+            <th>用户</th>
+            <th>运维助理</th>
+            <th>安全库存</th>
+            <th>运维管理员</th>
+            <th>系统管理</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+            <td>{{data.nickname}}</td>
+            <td>{{data.opAssistantPermission ? '是':'否'}}</td>
+            <td>{{data.safetyStockPermission ? '是':'否'}}</td>
+            <td>{{data.opManagerPermission ? '是':'否'}}</td>
+            <td>{{data.systemSettingsPermission ? '是':'否'}}</td>
+            <td>
+              <a (click)="modify(data.id)">编辑</a>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </ng-container>
+    <!-- 新建/编辑站点 -->
+    <ng-container *ngIf="showOperatePage">
+      <h1 class="module_title">
+        <span (click)="showOperatePage=false;" class="backIcon">&lt;</span>
+        编辑用户
+      </h1>
+      <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm" nzNoColon="true">
+        <h2 class="second_title">用户信息</h2>
+        <nz-row>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzRequired>姓名</nz-form-label>
+              <nz-form-control [nzErrorTip]="errorTpl">
+                <span>{{detailData.nickname}}</span>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
+        <h2 class="second_title">功能权限</h2>
+        <nz-row>
+          <nz-col nzSpan="6">
+            <nz-form-item>
+              <nz-form-label nzSpan="6">运维助理</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-switch formControlName="opAssistantPermission"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="6">
+            <nz-form-item>
+              <nz-form-label nzSpan="6">安全库存</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-switch formControlName="safetyStockPermission"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="6">
+            <nz-form-item>
+              <nz-form-label nzSpan="6">运维管理员</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-switch formControlName="opManagerPermission"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="6">
+            <nz-form-item>
+              <nz-form-label nzSpan="6">系统设置</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-switch formControlName="systemSettingsPermission"></nz-switch>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
+        <h2 class="second_title">运维助理负责区域</h2>
+        <nz-row>
+          <nz-col nzSpan="24">
+            <nz-tree #nzTreeComponent [nzData]="nodes" nzCheckable [nzCheckedKeys]="defaultCheckedKeys"
+              (nzCheckBoxChange)="nzCheck($event)">
+            </nz-tree>
+          </nz-col>
+        </nz-row>
+        <nz-row>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="3"></nz-form-label>
+              <nz-form-control nzSpan="21">
+                <button nz-button nzType="primary" [nzLoading]="btnLoading" (click)="saveOperateData()">保存</button>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
+      </form>
+    </ng-container>
+  </div>
+</div>
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+  <ng-container *ngIf="control.hasError('minlength')">
+    最少8个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('forbiddePsw')">
+    至少包含字母、数字和特殊字符中的两项
+  </ng-container>
+</ng-template>
+<!-- 选择站点 -->
+<nz-modal nzMaskClosable="false" nzWidth="900px" [(nzVisible)]="showAddPage" (nzOnCancel)="showAddPage = false"
+  nzTitle="添加用户" (nzOnOk)="confirmSelect()">
+  <form *ngIf="showAddPage" nz-form [formGroup]="addForm">
+    <nz-row>
+      <nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzRequired nzSpan="5">人员</nz-form-label>
+          <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+            <nz-select [nzMaxTagCount]="3" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple" nzPlaceHolder="请选择"
+              formControlName="idList">
+              <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value">
+              </nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+    </nz-row>
+  </form>
+</nz-modal>

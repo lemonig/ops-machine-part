@@ -1,0 +1,532 @@
+<div class="card_warp my-order">
+  <ng-container *ngIf="!showDetailPage">
+    <nz-spin [nzSpinning]="isSpinning">
+      <h1 class="module_title">申请记录</h1>
+      <div class="query_warp">
+        <div>
+          <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
+            [(ngModel)]="startDate0"></nz-date-picker>
+          -
+          <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
+            [(ngModel)]="endTime">
+          </nz-date-picker>
+
+          <nz-select class="BSpace" style="width: 120px;" [(ngModel)]="registrationStatus">
+            <nz-option nzValue="" nzLabel="全部"></nz-option>
+            <nz-option nzValue="0" nzLabel="未登记"></nz-option>
+            <nz-option nzValue="1" nzLabel="已登记"></nz-option>
+          </nz-select>
+          <nz-select class="BSpace" style="width: 120px;" [(ngModel)]="shippingStatus">
+            <nz-option nzValue="" nzLabel="全部"></nz-option>
+            <nz-option nzValue="0" nzLabel="一件未发出"></nz-option>
+            <nz-option nzValue="1" nzLabel="部分发出 "></nz-option>
+            <nz-option nzValue="2" nzLabel="全部发出 "></nz-option>
+          </nz-select>
+          <input class="BSpace" style="width:180px;" nz-input placeholder="单据号/申请人" [(ngModel)]="projectName" />
+
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+          <button nz-button nzType="default" (click)="download()">导出</button>
+        </div>
+        <div></div>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>单据号</th>
+              <th>申请人</th>
+              <th>申请时间</th>
+              <th>紧急程度</th>
+              <th>发货方式</th>
+              <th>运维地区</th>
+              <th>发货状态</th>
+              <th>核销状态</th>
+              <th>登记状态</th>
+              <th>操作</th>
+
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.requisitionNumber}}</td>
+              <td>{{data.applicant}}</td>
+              <td>{{data.applicationTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+              <td>{{data.urgencyLevel?.label}}</td>
+              <td>{{data.shippingMethod?.label}}</td>
+              <td>{{data.maintenanceRegion}}</td>
+              <td>
+                <nz-progress [nzPercent]="data.shipRate" nzSize="small"></nz-progress>
+
+              </td>
+              <td>
+                <nz-progress [nzPercent]="data.verifiedRate" nzSize="small"></nz-progress>
+
+              </td>
+              <td>{{data.registrationStatus?.label}}</td>
+
+              <td><a (click)="getDetail(data.id)">详情</a></td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-spin>
+  </ng-container>
+  <!-- 详情页 -->
+  <ng-container *ngIf="showDetailPage">
+    <nz-spin [nzSpinning]="isSpinning">
+      <h1 class="module_title">
+        <span (click)="showDetailPage =false" class="backIcon">&lt;</span>
+        申请记录
+        <button style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+      </h1>
+      <!-- <div class="query_warp">
+        <div></div>
+        <ng-container>
+          <div *ngIf=" !isEdit">
+            <button nz-button nzType="default" (click)="editHandleForm()">编辑</button>
+            <button nz-button nzType="default" (click)="tansferWork()" [nzLoading]="btnLoading">转派工单</button>
+            <button nz-button nzType="primary" (click)="finshedWork()" [nzLoading]="btnLoading">完结工单</button>
+          </div>
+          <div *ngIf="isEdit">
+            <button nz-button nzType="default" (click)="unsaveHandleForm()">取消</button>
+            <button nz-button nzType="primary" [nzLoading]="btnLoading" (click)="saveHandleForm()">保存</button>
+          </div>
+        </ng-container>
+
+        <div *ngIf="workOrdertatus == 2">
+          <button nz-button nzType="primary" [nzLoading]="btnLoading" (click)="receiveWorkOrder()">接受工单</button>
+        </div>
+      </div> -->
+      <div class="msg_wrap">
+        <div>
+          <nz-descriptions nzTitle="申请单信息" [nzColumn]="4">
+
+            <nz-descriptions-item nzTitle="单据号">{{detailData.requisitionNumber ?detailData.requisitionNumber :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="申请人">{{detailData.applicant ? detailData.applicant :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="2" nzTitle="申请人部门">{{detailData.applicantDepartment ?
+              detailData.applicantDepartment
+              :'--'}}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.value :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="站点">{{detailData.station ? detailData.station :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="办事处">{{detailData.office ? detailData.office :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="运维地区">{{detailData.maintenanceRegion ? detailData.maintenanceRegion :'--'}}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item nzTitle="申请时间">{{detailData.applicationTime| date:'yyyy-MM-dd HH:mm:ss'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="发货方式">{{detailData.shippingMethod ?detailData.shippingMethod.value :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="项目编号">{{detailData.projectNumber ?detailData.projectNumber :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="项目名称">{{detailData.projectName ? detailData.projectName:'--'}}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item nzTitle="单据状态">{{ detailData.status ?detailData.status.value :'--' }}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="取消人">{{ detailData.cancellationUser ? detailData.cancellationUser:'--' }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="2" nzTitle="取消时间">{{ detailData.cancellationTime ?
+              detailData.cancellationTime:'--' }}
+            </nz-descriptions-item>
+
+            <nz-descriptions-item nzTitle="收件人">{{ detailData.shippingFullname ?detailData.shippingFullname :'--'
+              }}</nz-descriptions-item>
+            <nz-descriptions-item nzTitle="联系电话">{{detailData.shippingPhoneNumber ?detailData.shippingPhoneNumber :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="2" nzTitle="收件地址">{{detailData.shippingFormatAddress
+              ?detailData.shippingFormatAddress
+              :'--' }}
+            </nz-descriptions-item>
+
+            <nz-descriptions-item [nzSpan]="4" nzTitle="备注">{{detailData.notes ?detailData.notes :'--' }}
+            </nz-descriptions-item>
+
+
+          </nz-descriptions>
+        </div>
+
+        <div id="tableHeight">
+          <nz-table class="table_warp" #basicTable [nzData]="detailData.rawDetailsVoList" [nzShowSizeChanger]="true"
+            [nzFrontPagination]="true" [nzShowPagination]="false">
+            <thead>
+              <tr style="position: relative;" appTableScroll>
+                <th>存货编码</th>
+                <th>仪器名称</th>
+                <th>仪器品牌型号</th>
+                <th>物料名称</th>
+                <th>类型</th>
+                <th>计量单位</th>
+                <th>数量</th>
+                <th>领用类型</th>
+                <th>领用原因</th>
+                <th>附件</th>
+                <th>紧急程度</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of basicTable.data index as i">
+                <td>{{data.inventoryCode}}</td>
+                <td>{{data.instrumentName}}</td>
+                <td>{{data.instrumentBrandModel}}</td>
+                <td>{{data.materialName}}</td>
+                <td>{{data.unitOfMeasure?.label}}</td>
+                <td>{{data.materialType?.label}}</td>
+                <td>{{data.quantity}}</td>
+                <td>{{data.requisitionType?.label}}</td>
+                <td>{{data.requisitionReason}}</td>
+                <td>{{data.photo}}</td>
+                <td>{{data.urgencyLevel?.label}}</td>
+
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <nz-tabset [(nzSelectedIndex)]="currentTab" (nzSelectChange)="changeTab()">
+
+          <nz-tab nzTitle="配件登记">
+            <ng-container *ngIf="currentTab == 0">
+              <div class="stationData_warp">
+                <div class="query_warp">
+                  <form nz-form [formGroup]="operateForm0" class="user_form" [nzLayout]="'inline'" (ngSubmit)="add()">
+
+                    <nz-form-item>
+                      <nz-form-label nzRequired>存货编码</nz-form-label>
+                      <nz-form-control [nzErrorTip]="errorTpl">
+                        <input class="BSpace" style="width:180px;" nz-input placeholder="单据号/申请人"
+                          formControlName="inventoryCode" [disabled]="true" />
+                        &nbsp;&nbsp;&nbsp;<a (click)="selectInvontory()">查看编码</a>
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                      <nz-form-label nzRequired>申请数量</nz-form-label>
+                      <nz-form-control>
+                        <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                        </nz-input-number>
+                      </nz-form-control>
+                    </nz-form-item>
+                    <nz-form-item>
+                      <nz-form-control>
+                        <button nz-button nzType="primary" [disabled]="!operateForm0.valid">提交</button>
+                      </nz-form-control>
+                    </nz-form-item>
+
+                  </form>
+
+
+                </div>
+
+                <ng-container *ngIf="detailData?.registrationStatus?.value === '0' ;else elseBlock">
+                  <button nz-button nzType="primary" style="background-color: #017737;"
+                    (click)="overBookin($event)">完成登记</button>
+                </ng-container>
+
+                <ng-template #elseBlock>
+                  <button nz-button nzType="danger" (click)="reBookin()">再次登记</button>
+                </ng-template>
+
+
+                <div id="tableHeight">
+                  <nz-table class="table_warp" #basicTable [nzData]="tableData0" [nzShowSizeChanger]="true"
+                    [nzFrontPagination]="true" [nzShowPagination]="false">
+                    <thead>
+                      <tr style="position: relative;" appTableScroll>
+                        <th>存货编码</th>
+                        <th>存货名称</th>
+                        <th>规格</th>
+                        <th>型号</th>
+                        <th>类型</th>
+                        <th>计量单位</th>
+                        <th>申请数量</th>
+                        <th>需要核销数</th>
+                        <th>已发货数量</th>
+                        <th>已核销数量</th>
+                        <th>登记人</th>
+                        <th>登记时间</th>
+                        <th *ngIf="detailData?.registrationStatus?.value === '0' ">操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let data of basicTable.data index as i">
+                        <td>{{data.inventoryCode}}</td>
+                        <td>{{data.inventoryName}}</td>
+                        <td>{{data.specification}}</td>
+                        <td>{{data.modelNumber}}</td>
+                        <td>{{data.inventoryType}}</td>
+                        <td>{{data.unitOfMeasure}}</td>
+                        <td>{{data.requestedQuantity}}</td>
+                        <td>{{data.shouldVerifiedQuantity}}</td>
+                        <td>{{data.deliveredQuantity}}</td>
+                        <td>{{data.verifiedQuantity}}</td>
+                        <td>{{data.registrant}}</td>
+                        <td>{{data.registrationTime}}</td>
+
+
+                        <td *ngIf="detailData?.registrationStatus?.value === '0' ">
+                          <a (click)="modify(data.id)">编辑</a>
+                          <span class="divider"></span>
+                          <a (click)="delete(data.id)">删除</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+                </div>
+
+
+              </div>
+            </ng-container>
+          </nz-tab>
+          <nz-tab nzTitle="发货记录">
+            <ng-container *ngIf="currentTab == 1">
+              <div class="stationData_warp">
+                <ng-container *ngFor="let data of tableData1">
+                  <div>
+
+                    <nz-descriptions nzTitle="" [nzColumn]="3">
+                      <nz-descriptions-item nzTitle="发货时间">{{data.shipmentTime
+                        ?data.shipmentTime
+                        :'--'}}
+                      </nz-descriptions-item>
+                      <nz-descriptions-item nzSpan="2" nzTitle="发货人">{{data.shipmentUserName
+                        ?data.shipmentUserName
+                        :'--'}}
+                      </nz-descriptions-item>
+                      <nz-descriptions-item nzTitle="收件人">{{data.shippingFullname ?data.shippingFullname
+                        :'--'}}
+                      </nz-descriptions-item>
+                      <nz-descriptions-item nzTitle="联系电话">{{data.shippingPhoneNumber
+                        ?data.shippingPhoneNumber
+                        :'--'}}
+                      </nz-descriptions-item>
+                      <nz-descriptions-item nzTitle="收件地址">{{data.shippingFormatAddress
+                        ?data.shippingFormatAddress
+                        :'--'}}
+                      </nz-descriptions-item>
+                      <nz-descriptions-item nzSpan="3" nzTitle="物流单号">{{data.shipmentNumber ?data.shipmentNumber
+                        :'--'}}
+                      </nz-descriptions-item>
+                    </nz-descriptions>
+                    <div id="tableHeight">
+                      <nz-table class="table_warp" #basicTable [nzData]="data.detailVoList" [nzShowSizeChanger]="true"
+                        [nzFrontPagination]="true" [nzShowPagination]="false">
+                        <thead>
+                          <tr style="position: relative;" appTableScroll>
+                            <th>存货编码</th>
+                            <th>存货名称</th>
+                            <th>规格</th>
+                            <th>型号</th>
+                            <th>类型</th>
+                            <th>单位</th>
+                            <th>发货数量</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let data of basicTable.data index as i">
+                            <td>{{data.inventoryCode}}</td>
+                            <td>{{data.inventoryName}}</td>
+                            <td>{{data.specification}}</td>
+                            <td>{{data.modelNumber}}</td>
+                            <td>{{data.inventoryType}}</td>
+                            <td>{{data.unitOfMeasure}}</td>
+                            <td>{{data.unitPrice}}</td>
+                            <td>{{data.trackingNumber}}</td>
+                          </tr>
+                        </tbody>
+                      </nz-table>
+                    </div>
+                  </div>
+                  <nz-divider></nz-divider>
+                </ng-container>
+
+              </div>
+            </ng-container>
+          </nz-tab>
+          <nz-tab nzTitle="核销扣减记录">
+            <ng-container *ngIf="currentTab == 2">
+              <div class="stationData_warp">
+                <button nz-button nzType="primary" style="background-color: #017737;"
+                  (click)="add2($event)">添加核销扣减</button>
+                <div id="tableHeight">
+                  <nz-table class="table_warp" #basicTable [nzData]="tableData2" [nzShowSizeChanger]="true"
+                    [nzFrontPagination]="true" [nzShowPagination]="false">
+                    <thead>
+                      <tr style="position: relative;" appTableScroll>
+                        <th>申请单号</th>
+                        <th>存货编码</th>
+                        <th>物料名称</th>
+                        <th>规格</th>
+                        <th>型号</th>
+                        <th>核销类型</th>
+                        <th>核销扣减</th>
+                        <th>原因</th>
+                        <th>操作人</th>
+                        <th>操作时间</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let data of basicTable.data index as i">
+                        <td>{{data.requisitionNumber}}</td>
+                        <td>{{data.inventoryCode}}</td>
+                        <td>{{data.materialName}}</td>
+                        <td>{{data.specification}}</td>
+                        <td>{{data.modelNumber}}</td>
+                        <td>{{data.verificationCategory?.label}}</td>
+                        <td>{{data.deductionQuantity}}</td>
+                        <td>{{data.reason}}</td>
+                        <td>{{data.operator}}</td>
+                        <td>{{data.operatorTime}}</td>
+
+
+                        <td>
+
+                          <a (click)="delete2(data.id)">删除</a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </nz-table>
+                </div>
+              </div>
+            </ng-container>
+          </nz-tab>
+
+        </nz-tabset>
+
+      </div>
+    </nz-spin>
+  </ng-container>
+
+
+
+
+
+  <!--tab0 存货编码 -->
+  <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
+    (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
+    nzWidth="1000">
+    <ng-template #modalContent1>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData3" [(nzPageIndex)]="q3.pageIndex"
+        [(nzTotal)]="q3.total" [(nzPageSize)]="q3.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+        (nzPageIndexChange)="pageIndexChange3($event)" (nzPageSizeChange)="pageSizeChange3($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th></th>
+            <th>序号</th>
+            <th>存货编码</th>
+            <th>存货名称 </th>
+            <th>规格 </th>
+            <th>型号 </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>
+              <label nz-radio [ngModel]="data.id === inventorySelected.id"
+                (click)="handleRadioClick($event, data)"></label>
+            </td>
+            <td>{{i + 1 + ((q3.pageIndex-1) * q3.pageSize)}}</td>
+            <td>{{data.inventoryCode}}</td>
+            <td>{{data.inventoryName}}</td>
+            <td>{{data.specification}}</td>
+            <td>{{data.modelNumber}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </ng-template>
+  </nz-modal>
+
+
+
+  <!--tab0 存货数量表单 -->
+  <nz-modal *ngIf="showOperatePage0" [nzVisible]="showOperatePage0" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage0 = false" (nzOnOk)="handleOperatePage0Ok()">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm0">
+          <nz-row>
+            <nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzRequired nzSpan="6">申请数量</nz-form-label>
+                <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                  <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                  </nz-input-number>
+
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+          </nz-row>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
+
+
+
+
+  <!-- tab3核销单 -->
+  <nz-modal *ngIf="showOperatePage2" [nzVisible]="showOperatePage2" [nzContent]="modalContent2"
+    (nzOnCancel)="showOperatePage2 = false" (nzOnOk)="handleOperatePage2Ok()">
+    <ng-template #modalContent2>
+      <!-- 新建编辑 -->
+      <ng-container>
+
+        <form nz-form [formGroup]="operateForm2">
+          <nz-row>
+            <nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzRequired nzSpan="5">存货编码</nz-form-label>
+                <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                  <nz-select name="select-error" formControlName="inventoryCode" style="width: 200px;">
+                    <nz-option *ngFor="let item of tableData0" [nzValue]="item.inventoryCode"
+                      [nzLabel]="item.inventoryName">
+                    </nz-option>
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzRequired nzSpan="5">扣减数量</nz-form-label>
+                <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                  <nz-input-number formControlName="deductionQuantity" [nzMin]="0" [nzStep]="1">
+                  </nz-input-number>
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzRequired nzSpan="5">扣减原因</nz-form-label>
+                <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                  <textarea nz-input formControlName="reason" placeholder="请输入" ngModel nzAutosize></textarea>
+                </nz-form-control>
+              </nz-form-item>
+
+            </nz-col>
+          </nz-row>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
+
+
+  <ng-template #errorTpl let-control>
+    <ng-container *ngIf="control.hasError('maxlength')">
+      最多200个字符!
+    </ng-container>
+    <ng-container *ngIf="control.hasError('required')">
+      请输入
+    </ng-container>
+  </ng-template>

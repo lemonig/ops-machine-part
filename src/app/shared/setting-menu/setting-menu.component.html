@@ -1,0 +1,6 @@
+<div class="menu_warp" [ngClass]="{hasFooter: systemBelong}">
+    <ul>
+        <li (click)="goUrl('setting/ledger')" [ngClass]="{active: order == 1}"><i class="list1"></i>配件台账</li>
+        <li (click)="goUrl('setting/categary')" [ngClass]=" {active: order==2}"><i class="list3"></i>配件类别</li>
+        <li (click)="goUrl('setting/user')" [ngClass]="{active: order == 3}"><i class="list2"></i>权限设置</li>
+    </ul>

@@ -1,0 +1,92 @@
+<div class="card_warp scene">
+  <ng-container>
+    <h1 class="module_title">安全配件</h1>
+    <div class="stationData_warp">
+      <span class="BSpace">状态：</span>
+      <nz-select class="BSpace" style="width: 120px;" [(ngModel)]="safeStatus" nzAllowClear="true">
+        <nz-option nzValue="1" nzLabel="安全 "></nz-option>
+        <nz-option nzValue="2" nzLabel="预警"></nz-option>
+      </nz-select>
+      <input class="BSpace" style="width:180px;" nz-input placeholder="搜索" [(ngModel)]="proname" />
+      <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+      <button nz-button nzType="default" (click)="download()">导出</button>
+
+    </div>
+    <div class="operate-text">
+      <span>U8C库存更新时间：{{ additionalData?.u8cInventorySyncTime}}
+        二手仓库存更新时间：{{additionalData?.usedWarehouseSyncTime}}</span>
+    </div>
+    <div id="tableHeight" appTableHeight>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading" [(nzPageIndex)]="q.pageIndex"
+        [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+        (nzPageIndexChange)="pageIndexChange($event)" (nzPageSizeChange)="pageSizeChange($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th>序号</th>
+            <th>安全状态</th>
+            <th>存货编码</th>
+            <th>存货名称</th>
+            <th>配件类别</th>
+            <th>库存数量</th>
+            <th>U8C库存</th>
+            <th>二手仓库存</th>
+            <th>最近预警日期</th>
+            <th>预警线</th>
+            <th>安全线</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+            <td>
+
+              <nz-badge *ngIf="data.safeStatus == 2" nzColor="red" nzText="预警"></nz-badge>
+              <nz-badge *ngIf="data.safeStatus == 1" nzColor="green" nzText="安全"></nz-badge>
+
+            </td>
+            <td>{{data.inventoryCode}}</td>
+            <td>{{data.inventoryName}}</td>
+            <td>{{data.accessoryCategoryName}}</td>
+            <td>{{data.inventoryQuantity}}</td>
+            <td>{{data.u8cInventoryQuantity}}</td>
+            <td>{{data.usedWarehouseQuantity}}</td>
+            <td>{{data.usedWarehouseSyncTime}}</td>
+            <td>{{data.warningThreshold}}</td>
+            <td>{{data.safetyThreshold}}</td>
+
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-container>
+  <!-- 新建编辑 -->
+  <nz-modal nzWidth="500" nzTitle="设置通知人手机号" nzMaskClosable="false" [(nzVisible)]="showOperatePage"
+    (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
+    <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm">
+      <nz-row>
+        <nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label nzSpan="5">姓名</nz-form-label>
+            <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+              <textarea nz-input placeholder="多个以空格隔开" formControlName="name"
+                [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+        <p>手机号以企业微信个人信息页为准，设置后将在企业微信收到提醒通知</p>
+
+
+      </nz-row>
+    </form>
+  </nz-modal>
+</div>
+
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+</ng-template>

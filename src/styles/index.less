@@ -1,0 +1,522 @@
+/* You can add global styles to this file, and also import other style files */
+@import "./theme.less";
+
+//整体布局样式覆盖
+@media (max-width: 767px) {
+  .alain-default__content {
+    transform: none !important;
+  }
+}
+
+.alain-default__content {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-bottom: 0 !important;
+  //无页脚
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+.alain-default__fixed .alain-default__content {
+  margin-top: 48px !important;
+}
+
+.hasFooter {
+  //高度定死(有页脚)
+  height: calc(100vh - 72px) !important;
+}
+
+#default_content_warp {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.content_footer {
+  text-align: center;
+  color: #fff;
+  height: 24px;
+  line-height: 24px;
+  background-color: @primary-color;
+}
+
+.alain-default__header {
+  height: 48px !important;
+}
+
+//模态框样式覆盖
+.ant-modal-header,
+.ant-modal-footer {
+  background: @modal-color;
+}
+
+.ant-modal-title {
+  font-weight: bold;
+}
+
+//end
+
+//头部样式
+.alain-default__fixed .alain-default__header {
+  position: absolute !important;
+}
+
+.header_warp {
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.header_name {
+  float: left;
+}
+
+.header_name img {
+  height: 32px;
+}
+
+.header_name span {
+  font-size: 16px;
+  line-height: 48px;
+  color: #fff;
+  padding-left: 10px;
+}
+
+.header_menu {
+  float: right;
+  text-align: right;
+  height: 100%;
+}
+
+.header_menu ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.header_menu ul .module_list {
+  color: #fff;
+  padding: 0 8px;
+  cursor: pointer;
+  line-height: 48px;
+}
+
+.module_list.active {
+  background: @module-hover;
+}
+
+.module_list i {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: text-top;
+  margin-right: 4px;
+  background-image: url(../assets/tmp/img/nav_icon.png);
+  background-repeat: no-repeat;
+}
+
+.module_list i.list {
+  background-position: 0 0;
+}
+
+.module_list i.station {
+  background-position: 0 -18px;
+}
+
+.module_list i.qa {
+  background-position: 0 -36px;
+}
+
+.module_list i.manage {
+  background-position: 0 -54px;
+}
+
+.module_list i.stat {
+  background-position: 0 -72px;
+}
+
+.module_list i.setting {
+  background-position: 0 -90px;
+}
+
+.module_list i.operation {
+  background-image: url(../assets/tmp/img/operate.png);
+  background-repeat: no-repeat;
+}
+
+.header_menu ul .module_list:hover {
+  background: @module-hover;
+}
+
+.menuActive {
+  color: @primary-color;
+}
+
+//end
+//Table end
+//滚动条样式
+#default_content_warp::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #dee0e2;
+}
+
+#default_content_warp::-webkit-scrollbar-thumb {
+  background: #6e6e6e;
+}
+
+//end
+
+// 日期对齐
+.dateWidth .ant-calendar-picker {
+  width: 100% !important;
+}
+
+//end
+
+// 表格样式重置
+.ant-table-tbody > tr > td,
+.ant-table-thead > tr > th {
+  padding: 10px 10px !important;
+}
+
+.ant-table {
+  color: #0b1721 !important;
+}
+
+//end
+
+//表格滚动
+.ant-table-thead > tr {
+  transition: none !important;
+  z-index: 2 !important;
+}
+
+//end
+//统一样式
+.card_warp {
+  padding: 24px;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+.module_title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 20px 0;
+  height: 30px;
+}
+
+.second_title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.query_warp {
+  display: flex;
+}
+
+.query_warp > div {
+  flex: 1;
+}
+
+.query_warp > div:last-child {
+  text-align: right;
+}
+
+.query_warp {
+  margin-bottom: 10px;
+}
+
+.BSpace {
+  margin-left: 8px;
+}
+
+.divider {
+  margin: 0 4px;
+}
+
+// .cancelBtn {
+//   background-color: #ECEDF0;
+//   border-color: #ECEDF0;
+// }
+
+.prompt {
+  font-style: normal;
+  color: #ff3204;
+}
+
+.backIcon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: #ecedf0;
+  border-radius: 2px;
+  border: 1px solid #c1c7d0;
+  line-height: 18px;
+  text-align: center;
+  color: rgba(23, 43, 77, 0.85);
+  font-size: 12px;
+  font-weight: normal;
+  vertical-align: middle;
+  margin-bottom: 4px;
+  cursor: pointer;
+}
+
+//end TABLE
+.system .ant-form-item-control,
+.user .ant-form-item-control,
+.station .ant-form-item-control,
+.my-order .ant-form-item-control {
+  padding-left: 30px;
+}
+
+.ant-form-item label > .anticon {
+  vertical-align: -0.125em !important;
+  cursor: pointer;
+  color: @primary-color;
+}
+
+.factor_tModal .ant-modal-body {
+  padding-bottom: 0 !important;
+}
+
+.tableUpload .ant-upload-list-item {
+  display: none !important;
+}
+
+.self_option {
+  color: @primary-color;
+}
+
+.AllTree_warp .ant-tree li span.ant-tree-switcher {
+  width: auto !important;
+}
+
+.AllTree_warp .ant-tree li ul {
+  padding-left: 20px !important;
+}
+
+.AllTree_warp .ant-tree .ant-tree-child-tree {
+  //解决树名字太长显示不全
+  overflow: visible !important;
+}
+
+//拖拽样式
+.cdk-drag-preview {
+  display: table;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.canDrag .cdk-drag {
+  cursor: move !important;
+}
+
+//Dropdown  end
+.ant-dropdown-menu-item > .anticon:first-child {
+  margin-right: 0 !important;
+}
+
+.noPadding .ant-modal-body {
+  padding: 0 !important;
+}
+
+//地图样式
+.level1 {
+  background: @level1;
+}
+
+.level2 {
+  background: @level2;
+}
+
+.level3 {
+  background: @level3;
+}
+
+.level4 {
+  background: @level4;
+}
+
+.level5 {
+  background: @level5;
+}
+
+.level6 {
+  background: @level6;
+}
+
+.noLevel {
+  background-color: @noLevel;
+}
+
+.levelOn {
+  background: #23cf6d;
+}
+
+.levelOff {
+  background: @noLevel;
+}
+
+.marker_warp {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  line-height: 20px;
+  text-align: center;
+  color: #fff;
+}
+
+.info_warp {
+  border-radius: 4px;
+  width: 500px;
+  min-height: 300px;
+}
+
+.info_warp .info_title {
+  padding: 10px;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.info_warp .factor_list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 10px;
+}
+
+.info_warp .factor_list > div {
+  flex-basis: 33.33333%;
+  padding: 6px 0;
+}
+
+.waterLevelItem {
+  display: inline-block;
+  border-radius: 4px;
+  color: #fff;
+  font-style: normal;
+  width: 40px;
+  text-align: center;
+}
+
+.amap-info-close {
+  top: 11px !important;
+}
+
+.amap-info-content {
+  padding: 0 !important;
+}
+
+.alarmFactor4 {
+  font-weight: bold;
+  color: @level4;
+}
+
+.alarmFactor5 {
+  font-weight: bold;
+  color: @level5;
+}
+
+.alarmFactor6 {
+  font-weight: bold;
+  color: @level6;
+}
+
+//end
+.list_warp .ant-tabs-bar {
+  margin-bottom: 0 !important;
+}
+
+.mainPoll_content .ant-progress-inner {
+  border-radius: 0 !important;
+}
+
+.list_video .ant-modal-body {
+  padding-top: 0 !important;
+}
+
+//全屏滚动封装
+#tableHeight {
+  // width: 100%;
+  // overflow-x: auto;
+  overflow-y: auto;
+}
+
+#tableHeight::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #dee0e2;
+}
+
+#tableHeight::-webkit-scrollbar-thumb {
+  background: #6e6e6e;
+}
+
+//end
+.fullscreen_modal .ant-modal-wrap {
+  top: 48px !important;
+}
+
+.fullscreen_modal .ant-modal {
+  top: 0px !important;
+  padding-bottom: 0 !important;
+}
+
+.fullscreen_modal .ant-modal-close {
+  display: none !important;
+}
+
+.fullscreen_modal .ant-modal-body {
+  padding: 0 !important;
+}
+
+.fullscreen_modal .ant-modal-content {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.fullscreen_content {
+  height: calc(100vh - 48px);
+  overflow: auto;
+  padding: 24px;
+}
+
+.user_form .ant-form-item-label > label::after {
+  display: none !important;
+}
+
+.amap-copyright,
+.amap-logo {
+  display: none !important;
+}
+
+.minute_modal .ant-modal-body {
+  padding: 0;
+}
+
+// Descript
+.ant-descriptions-view {
+  padding: 0 6%;
+}
+
+// Card
+.ant-card {
+  margin: 0 6% 16px;
+}
+
+// Time
+
+//Step
+.ant-steps-dot .ant-steps-item-content,
+.ant-steps-dot.ant-steps-small .ant-steps-item-content {
+  width: 80%;
+}
+
+.operate-text {
+  margin-bottom: 16px;
+}

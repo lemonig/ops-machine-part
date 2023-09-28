@@ -1,0 +1,73 @@
+<div class="card_warp complain">
+  <nz-spin [nzSpinning]="isSpinning">
+    <ng-container>
+      <h1 class="module_title">出库台账</h1>
+      <div class="query_warp">
+        <div>
+          <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
+            [(ngModel)]="startDate0"></nz-date-picker>
+          -
+          <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
+            [(ngModel)]="endDate0">
+          </nz-date-picker>
+          <input class="BSpace" style="width:180px;" nz-input placeholder="申请人" [(ngModel)]="searchName" />
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+          <button nz-button nzType="default" (click)="download()">导出</button>
+          <!-- <button nz-button nzType="default" (click)="add()">新建</button> -->
+        </div>
+        <div>
+
+        </div>
+
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)" [nzScroll]="{ x: '1500px' }">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th rowspan="2">序号</th>
+              <th rowspan="2">省份</th>
+              <th rowspan="2">地市</th>
+              <th rowspan="2">人员</th>
+              <th rowspan="2">申领总量</th>
+              <th rowspan="2">未寄回量</th>
+              <th colspan='3'>ORP电极 </th>
+              <th colspan='3'>多参数电极类</th>
+              <th colspan='3'>电路板类</th>
+            </tr>
+            <tr>
+              <th>申领量</th>
+              <th>寄回量</th>
+              <th>差值</th>
+              <th>申领量</th>
+              <th>寄回量</th>
+              <th>差值</th>
+              <th>申领量</th>
+              <th>寄回量</th>
+              <th>差值</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.shipmentTime}}</td>
+              <td>{{data.shipmentUserName}}</td>
+              <td>{{data.application}}</td>
+              <td>{{data.applicationDepartment}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+              <td>{{data.specification}}</td>
+              <td>{{data.modelNumber}}</td>
+              <td>{{data.unitOfMeasure}}</td>
+              <td>{{data.outgoingQuantity}}</td>
+              <td>{{data.materialType?.label}}</td>
+              <td>{{data.shouldVerifiedQuantity}}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+  </nz-spin>
+</div>

@@ -1,0 +1,274 @@
+<div class="card_warp my-order">
+  <ng-container *ngIf="!showDetailPage">
+    <nz-spin [nzSpinning]="isSpinning">
+      <h1 class="module_title">申请记录</h1>
+      <div class="query_warp">
+        <div>
+          <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
+            [(ngModel)]="startDate0"></nz-date-picker>
+          -
+          <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
+            [(ngModel)]="endTime">
+          </nz-date-picker>
+
+          <nz-select class="BSpace" style="width: 120px;" [(ngModel)]="registrationStatus">
+            <nz-option nzValue="" nzLabel="全部"></nz-option>
+            <nz-option nzValue="0" nzLabel="未登记"></nz-option>
+            <nz-option nzValue="1" nzLabel="已登记"></nz-option>
+          </nz-select>
+
+          <input class="BSpace" style="width:180px;" nz-input placeholder="单据号/申请人" [(ngModel)]="projectName" />
+
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+          <button nz-button nzType="default" (click)="download()">导出</button>
+        </div>
+        <div></div>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>单据号</th>
+              <th>业务员</th>
+              <th>申请人</th>
+              <th>申请人部门</th>
+              <th>提交时间</th>
+              <th>还库方式</th>
+              <th>登记状态</th>
+              <th>登记时间</th>
+              <th>操作</th>
+
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.requisitionNumber}}</td>
+              <td>{{data.registrant}}</td>
+              <td>{{data.applicant}}</td>
+              <td>{{data.applicantDepartment}}</td>
+              <td>{{data.applicationTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+              <td>{{data.shippingMethod.label}}</td>
+              <td>{{data.registrationStatus.label}}</td>
+              <td>{{data.registrationTime}}</td>
+
+              <td><a (click)="getDetail(data.id)">详情</a></td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-spin>
+  </ng-container>
+  <!-- 详情页 -->
+  <ng-container *ngIf="showDetailPage">
+    <nz-spin [nzSpinning]="isSpinning">
+      <h1 class="module_title">
+        <span (click)="showDetailPage =false" class="backIcon">&lt;</span>
+        申请记录
+        <button style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+      </h1>
+
+      <div class="msg_wrap">
+        <div>
+          <nz-descriptions nzTitle="申请单信息" [nzColumn]="4">
+
+            <nz-descriptions-item nzTitle="单据号">{{detailData.requisitionNumber ?detailData.requisitionNumber :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="申请人">{{detailData.applicant ? detailData.applicant :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="2" nzTitle="申请人部门">{{detailData.applicantDepartment ?
+              detailData.applicantDepartment
+              :'--'}}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.value :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="站点">{{detailData.station ? detailData.station :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="办事处">{{detailData.office ? detailData.office :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="运维地区">{{detailData.maintenanceRegion ? detailData.maintenanceRegion :'--'}}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item nzTitle="申请时间">{{detailData.applicationTime| date:'yyyy-MM-dd HH:mm:ss'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="还库方式">{{detailData.shippingMethod ?detailData.shippingMethod.value :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="项目编号">{{detailData.projectNumber ?detailData.projectNumber :'--'}}
+            </nz-descriptions-item>
+            <nz-descriptions-item nzTitle="项目名称">{{detailData.projectName ? detailData.projectName:'--'}}
+            </nz-descriptions-item>
+
+
+
+            <nz-descriptions-item [nzSpan]="4" nzTitle="备注">{{detailData.notes ?detailData.notes :'--' }}
+            </nz-descriptions-item>
+
+
+          </nz-descriptions>
+        </div>
+
+
+        <div class="query_warp">
+          <form nz-form [formGroup]="operateForm0" class="user_form" [nzLayout]="'inline'" (ngSubmit)="add()">
+
+            <nz-form-item>
+              <nz-form-label nzRequired>存货编码</nz-form-label>
+              <nz-form-control [nzErrorTip]="errorTpl">
+                <input class="BSpace" style="width:180px;" nz-input placeholder="单据号/申请人"
+                  formControlName="inventoryCode" [disabled]="true" />
+                &nbsp;&nbsp;&nbsp;<a (click)="selectInvontory()">查看编码</a>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired>申请数量</nz-form-label>
+              <nz-form-control>
+                <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-control>
+                <button nz-button nzType="primary" [disabled]="!operateForm0.valid">提交</button>
+              </nz-form-control>
+            </nz-form-item>
+
+          </form>
+
+
+        </div>
+        <ng-container *ngIf="detailData?.registrationStatus?.value === '0' ;else elseBlock">
+          <button nz-button nzType="primary" style="background-color: #017737;"
+            (click)="overBookin($event)">完成登记</button>
+        </ng-container>
+
+        <ng-template #elseBlock>
+          <button nz-button nzType="danger" (click)="reBookin()">再次登记</button>
+        </ng-template>
+
+
+        <div id="tableHeight">
+          <nz-table class="table_warp" #basicTable [nzData]="tableData0" [nzShowSizeChanger]="true"
+            [nzFrontPagination]="true" [nzShowPagination]="false">
+            <thead>
+              <tr style="position: relative;" appTableScroll>
+                <th>产品编码</th>
+                <th>物品名称</th>
+                <th>数量</th>
+                <th>单位</th>
+                <th>故障现象</th>
+
+                <th *ngIf="detailData?.registrationStatus?.value === '0' ">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of basicTable.data index as i">
+                <td>{{data.inventoryCode}}</td>
+                <td>{{data.inventoryName}}</td>
+                <td>{{data.verifiedQuantity}}</td>
+                <td>{{data.unitOfMeasure}}</td>
+                <td>{{data.requestedQuantity}}</td>
+
+
+
+                <td *ngIf="detailData?.registrationStatus?.value === '0' ">
+                  <a (click)="modify(data.id)">编辑</a>
+                  <span class="divider"></span>
+                  <a (click)="delete(data.id)">删除</a>
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+
+
+
+      </div>
+    </nz-spin>
+  </ng-container>
+
+
+
+
+
+  <!--tab0 存货编码 -->
+  <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
+    (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
+    nzWidth="1000">
+    <ng-template #modalContent1>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData3" [(nzPageIndex)]="q3.pageIndex"
+        [(nzTotal)]="q3.total" [(nzPageSize)]="q3.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+        (nzPageIndexChange)="pageIndexChange3($event)" (nzPageSizeChange)="pageSizeChange3($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th></th>
+            <th>序号</th>
+            <th>存货编码</th>
+            <th>存货名称 </th>
+            <th>规格 </th>
+            <th>型号 </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>
+              <label nz-radio [ngModel]="data.id === inventorySelected.id"
+                (click)="handleRadioClick($event, data)"></label>
+            </td>
+            <td>{{i + 1 + ((q3.pageIndex-1) * q3.pageSize)}}</td>
+            <td>{{data.inventoryCode}}</td>
+            <td>{{data.inventoryName}}</td>
+            <td>{{data.specification}}</td>
+            <td>{{data.modelNumber}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </ng-template>
+  </nz-modal>
+
+
+
+  <!--tab0 存货数量表单 -->
+  <nz-modal *ngIf="showOperatePage0" [nzVisible]="showOperatePage0" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage0 = false" (nzOnOk)="handleOperatePage0Ok()">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm0">
+          <nz-row>
+            <nz-col nzSpan="24">
+              <nz-form-item>
+                <nz-form-label nzRequired nzSpan="6">申请数量</nz-form-label>
+                <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                  <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                  </nz-input-number>
+
+                </nz-form-control>
+              </nz-form-item>
+            </nz-col>
+          </nz-row>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
+
+
+
+
+
+
+
+  <ng-template #errorTpl let-control>
+    <ng-container *ngIf="control.hasError('maxlength')">
+      最多200个字符!
+    </ng-container>
+    <ng-container *ngIf="control.hasError('required')">
+      请输入
+    </ng-container>
+  </ng-template>

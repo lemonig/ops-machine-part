@@ -1,0 +1,13 @@
+{
+  "app": {
+    "name": "配件管理平台",
+    "description": "",
+    "support": "绿洁配件管理系统"
+  },
+  "user": {
+    "name": "Admin",
+    "avatar": "./assets/tmp/img/avatar.jpg",
+    "email": "cipchk@qq.com"
+  },
+  "menu": []
+}

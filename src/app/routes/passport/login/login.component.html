@@ -1,0 +1,47 @@
+<!--
+ * @Author: Jonny
+ * @Date: 2023-09-05 10:22:35
+ * @LastEditors: Jonny
+ * @LastEditTime: 2023-09-05 14:45:42
+ * @FilePath: \ops-machine-part\src\app\routes\passport\login\login.component.html
+-->
+<div class="login_warp">
+  <div><img src="../../../../assets/tmp/img/login-side.png"></div>
+  <div class="form_warp">
+    <h2>欢迎登录</h2>
+    <form nz-form [formGroup]="loginForm" (ngSubmit)="submit()" role="form">
+      <nz-form-item>
+        <nz-form-control nzErrorTip="请输入">
+          <nz-input-group nzSize="large" nzPrefixIcon="anticon anticon-user">
+            <input class="input_style" nz-input formControlName="username" placeholder="账号" appInputTrim>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <nz-form-control nzErrorTip="请输入">
+          <nz-input-group nzSize="large" nzPrefixIcon="anticon anticon-lock">
+            <input class="input_style" nz-input type="password" formControlName="password" placeholder="密码"
+              appInputTrim>
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
+        <button style="border-radius: 20px;" nzSize="large" nz-button type="submit" nzType="primary"
+          [nzLoading]="btnLoading" nzBlock>登录</button>
+      </nz-form-item>
+      <nz-form-item style="margin-bottom: 0;">
+        <div class="bottom_dec">
+          <!-- <div> 没有账号?<a (click)="goRegister()">立即注册</a></div> -->
+          <!-- <div><a nz-dropdown [nzDropdownMenu]="menu1">微信小程序</a></div>
+          <div><a nz-dropdown [nzDropdownMenu]="menu">安卓App</a></div>
+          <nz-dropdown-menu #menu="nzDropdownMenu">
+            <div><img src="../../../../assets/tmp/img/QR.png"></div>
+          </nz-dropdown-menu>
+          <nz-dropdown-menu #menu1="nzDropdownMenu">
+            <div><img width="300px" src="../../../../assets/tmp/img/wchart_qr.jpg"></div>
+          </nz-dropdown-menu> -->
+        </div>
+      </nz-form-item>
+    </form>
+  </div>
+</div>

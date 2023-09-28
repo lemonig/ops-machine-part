@@ -1,0 +1,67 @@
+<div class="card_warp complain">
+  <nz-spin [nzSpinning]="isSpinning">
+    <ng-container>
+      <h1 class="module_title">出库台账</h1>
+      <div class="query_warp">
+        <div>
+          <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
+            [(ngModel)]="startDate0"></nz-date-picker>
+          -
+          <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
+            [(ngModel)]="endDate0">
+          </nz-date-picker>
+          <input class="BSpace" style="width:180px;" nz-input placeholder="申请人" [(ngModel)]="searchName" />
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+          <button nz-button nzType="default" (click)="download()">导出</button>
+          <!-- <button nz-button nzType="default" (click)="add()">新建</button> -->
+        </div>
+        <div>
+
+        </div>
+
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)" [nzScroll]="{ x: '1500px' }">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>返库日期</th>
+              <th>业务员</th>
+              <th>申请人</th>
+              <th>部门</th>
+              <th>存货编码</th>
+              <th>存货名称</th>
+              <th>规格</th>
+              <th>型号</th>
+              <th>计量单位</th>
+              <th>数量</th>
+              <th>配件类别</th>
+              <th>核销方式</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.shipmentTime}}</td>
+              <td>{{data.shipmentUserName}}</td>
+              <td>{{data.application}}</td>
+              <td>{{data.applicationDepartment}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+              <td>{{data.specification}}</td>
+              <td>{{data.modelNumber}}</td>
+              <td>{{data.unitOfMeasure}}</td>
+              <td>{{data.outgoingQuantity}}</td>
+              <td>{{data.materialType?.label}}</td>
+              <td>{{data.shouldVerifiedQuantity}}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+  </nz-spin>
+</div>

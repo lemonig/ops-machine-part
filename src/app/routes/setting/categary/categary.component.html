@@ -1,0 +1,103 @@
+<div class="setting_warp user">
+  <div>
+    <app-setting-menu order="2"></app-setting-menu>
+  </div>
+  <div class="card_warp scene">
+    <ng-container>
+      <h1 class="module_title">配件类别</h1>
+      <div class="query_warp">
+        <button nz-button nzType="primary" (click)="add()">新建</button>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>名称</th>
+              <th>编码</th>
+              <th>是否核销</th>
+              <th>核销类别</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.name}}</td>
+              <td>{{data.code}}</td>
+              <td>{{data.isVerified}}</td>
+              <td>{{data.verificationCategoryName}}</td>
+              <td>{{data.createTime}}</td>
+              <td>
+                <a (click)="modify(data)">编辑</a>
+                <span class="divider"></span>
+                <a (click)="delete(data.id)">删除</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+    <!-- 新建编辑 -->
+    <nz-modal nzWidth="500" [nzTitle]="operateId ? '编辑' : '新增'" nzMaskClosable="false" [(nzVisible)]="showOperatePage"
+      (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
+      <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm">
+        <nz-row>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzRequired nzSpan="5">名称</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <input style="width: 100%;" nz-input placeholder="请填写" formControlName="name" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzRequired nzSpan="5">编码</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <input style="width: 100%;" nz-input placeholder="请填写" formControlName="code" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzRequired nzSpan="5">是否核销</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-select name="select-error" formControlName="isVerified" nzShowSearch nzAllowClear>
+                  <nz-option [nzValue]="true" nzLabel="核销 "></nz-option>
+                  <nz-option [nzValue]="false" nzLabel="不核销"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzRequired nzSpan="5">核销类别</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-select name="select-error" formControlName="verificationCategory" nzShowSearch nzAllowClear>
+                  <nz-option nzValue="1" nzLabel="现场核销 "></nz-option>
+                  <nz-option nzValue="2" nzLabel="寄回核销"></nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+
+
+        </nz-row>
+      </form>
+    </nz-modal>
+  </div>
+</div>
+
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+</ng-template>

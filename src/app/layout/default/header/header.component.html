@@ -1,0 +1,92 @@
+<!--
+ * @Author: 李大钊
+ * @Date: 2022-05-09 14:24:02
+ * @LastEditors: Jonny
+ * @LastEditTime: 2023-09-06 10:19:48
+ * @FilePath: \ops-machine-part\src\app\layout\default\header\header.component.html
+-->
+<div class="header_warp">
+  <div class="header_name">
+    <div style="display: flex;align-items: center;">
+      <img *ngIf="logo" [src]="logo">
+      <span>绿洁配件管理系统</span>
+    </div>
+  </div>
+  <div class="header_menu">
+    <ul>
+
+
+
+      <li class="module_list" [ngClass]="{active: activeUrl.split('/')[1] == 'part'}" nz-dropdown
+        [nzDropdownMenu]="menu1">
+        <i class="list"></i>配件申请
+        <nz-dropdown-menu #menu1="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'applicate'}"
+              (click)="goUrl('/part/applicate')">申请记录</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'ledger'}"
+              (click)="goUrl('/part/ledger')">出库台账</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'statis'}"
+              (click)="goUrl('/part/statis')">领用统计</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'shipments'}"
+              (click)="goUrl('/part/shipments')">发货记录</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'verified'}"
+              (click)="goUrl('/part/verified')">扣减核销</li>
+          </ul>
+        </nz-dropdown-menu>
+      </li>
+
+
+
+      <li class="module_list" [ngClass]="{active: activeUrl.split('/')[1] == 'reconcile'}" nz-dropdown
+        [nzDropdownMenu]="menu2">
+        <i class="list"></i>配件核销
+        <nz-dropdown-menu #menu2="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'history'}"
+              (click)="goUrl('/reconcile/history')">申请记录</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'ledger'}"
+              (click)="goUrl('/reconcile/ledger')">还库台账</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'summary'}"
+              (click)="goUrl('/reconcile/summary')">核销总表</li>
+
+
+
+          </ul>
+        </nz-dropdown-menu>
+      </li>
+
+      <li class="module_list" [ngClass]="{active: activeUrl.split('/')[1] == 'warehouse'}" nz-dropdown
+        [nzDropdownMenu]="menu3">
+        <i class="list"></i>安全库存
+        <nz-dropdown-menu #menu3="nzDropdownMenu">
+          <ul nz-menu>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'safe'}"
+              (click)="goUrl('/warehouse/safe')">安全配件</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'supply'}"
+              (click)="goUrl('/warehouse/supply')">配件补仓</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'alarm'}"
+              (click)="goUrl('/warehouse/alarm')">历史预警
+            </li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'notice'}"
+              (click)="goUrl('/warehouse/notice')">提醒通知</li>
+
+          </ul>
+        </nz-dropdown-menu>
+      </li>
+
+
+      <li (click)="goUrl('/setting')" class="module_list" [ngClass]="{active: activeUrl.split('/')[1] == 'setting'}">
+        <i class="setting"></i>系统设置
+      </li>
+
+
+      <li>
+        <header-fullscreen style="color:#fff;margin:0 8px;cursor: pointer;"></header-fullscreen>
+      </li>
+      <li>
+        <header-user></header-user>
+      </li>
+    </ul>
+  </div>
+</div>

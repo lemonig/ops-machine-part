@@ -1,0 +1,93 @@
+<!--
+ * @Author: 李大钊
+ * @Date: 2022-05-09 14:24:02
+ * @LastEditors: 李大钊
+ * @LastEditTime: 2022-05-16 11:15:25
+ * @FilePath: \electron-fence\src\app\layout\default\header\components\user.component.html
+-->
+<div class="alain-default__nav-item d-flex align-items-center px-sm" nz-dropdown nzPlacement="bottomRight"
+  [nzDropdownMenu]="userMenu">
+  <nz-avatar [nzSrc]="settings.user.avatar" nzSize="small" class="mr-sm"></nz-avatar>
+  {{ settings.user.nickname }}
+</div>
+<nz-dropdown-menu #userMenu="nzDropdownMenu">
+  <div nz-menu class="width-sm">
+    <!-- <div nz-menu-item (click)="modifyInfo()">
+      <i nz-icon nzType="profile" class="mr-sm"></i>
+      个人信息
+    </div>
+    <div nz-menu-item (click)="modifyPwd()">
+      <i nz-icon nzType="setting" class="mr-sm"></i>
+      修改密码
+    </div> -->
+    <div nz-menu-item (click)="logout()">
+      <i nz-icon nzType="logout" class="mr-sm"></i>
+      退出
+    </div>
+  </div>
+</nz-dropdown-menu>
+<nz-modal nzWidth="500" nzMaskClosable="false" [(nzVisible)]="showModifyPwd" nzTitle="修改密码" [nzOkLoading]="okLoading"
+  (nzOnCancel)=" showModifyPwd=false" (nzOnOk)="submitModifyPwd()">
+  <form *ngIf="showModifyPwd" nz-form [formGroup]="ModifyPwdForm" (ngSubmit)="submitModifyPwd()">
+    <nz-form-item>
+      <nz-form-label nzSpan="4" nzRequired>旧密码</nz-form-label>
+      <nz-form-control nzSpan="20" nzErrorTip="请输入">
+        <input type="password" nz-input formControlName="oldPwd" placeholder="请输入" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="4" nzRequired>新密码</nz-form-label>
+      <nz-form-control nzSpan="20" nzErrorTip="请输入">
+        <input type="password" nz-input formControlName="newPwd" placeholder="请输入" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="4" nzRequired>确认密码</nz-form-label>
+      <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+        <input type="password" nz-input formControlName="repeatNewPwd" placeholder="请输入" />
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+<!-- 个人信息 -->
+<nz-modal nzWidth="500" nzMaskClosable="false" [(nzVisible)]="showModifyInfo" nzTitle="个人信息" [nzOkLoading]="okLoading"
+  (nzOnCancel)="showModifyInfo=false" (nzOnOk)="submitModifyInfo()">
+  <form *ngIf="showModifyInfo" nz-form [formGroup]="infoForm">
+    <nz-form-item>
+      <nz-form-label nzSpan="4">姓名</nz-form-label>
+      <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+        <input nz-input placeholder="请输入" formControlName="nickname" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="4">单位</nz-form-label>
+      <nz-form-control nzSpan="20">
+        {{infoDetail.company}}
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="4">账号</nz-form-label>
+      <nz-form-control nzSpan="20">
+        {{infoDetail.account}}
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label nzSpan="4">手机号</nz-form-label>
+      <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+        <nz-input-number style="width:100%;" formControlName="mobile" nzPlaceHolder="请输入"></nz-input-number>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('mobileFormat')">
+    手机号码格式错误!
+  </ng-container>
+</ng-template>

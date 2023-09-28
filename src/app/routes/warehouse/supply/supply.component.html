@@ -1,0 +1,123 @@
+<!--
+ * @Author: Jonny
+ * @Date: 2023-09-05 10:37:51
+ * @LastEditors: Jonny
+ * @LastEditTime: 2023-09-06 16:52:15
+ * @FilePath: \ops-machine-part\src\app\routes\warehouse\supply\supply.component.html
+-->
+<div class="card_warp scene">
+  <ng-container *ngIf="!showOperatePage">
+    <h1 class="module_title">配件补仓</h1>
+    <div class="query_warp">
+      <button nz-button nzType="primary" (click)="add()">补仓</button>
+    </div>
+    <div id="tableHeight" appTableHeight>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading" [(nzPageIndex)]="q.pageIndex"
+        [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+        (nzPageIndexChange)="pageIndexChange($event)" (nzPageSizeChange)="pageSizeChange($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th>序号</th>
+            <th>补仓配件数量</th>
+            <th>创建人</th>
+            <th>创建时间</th>
+            <th>操作</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+            <td>{{data.accessoryNum}}</td>
+            <td>{{data.createByName}}</td>
+            <td>{{data.createTime}}</td>
+            <td>
+              <a (click)="download(data)">导出</a>
+              <span class="divider"></span>
+              <a (click)="delete(data.id)">删除</a>
+            </td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-container>
+  <!-- 新建编辑 -->
+  <!-- <nz-modal nzWidth="500" nzTitle="设置通知人手机号" nzMaskClosable="false" [(nzVisible)]="showOperatePage"
+    (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
+    <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm">
+      <nz-row>
+        <nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label nzSpan="5">姓名</nz-form-label>
+            <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+              <textarea nz-input placeholder="多个以空格隔开" formControlName="name"
+                [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+        <p>手机号以企业微信个人信息页为准，设置后将在企业微信收到提醒通知</p>
+
+
+      </nz-row>
+    </form>
+  </nz-modal>
+</div> -->
+
+
+  <ng-container *ngIf="showOperatePage">
+    <h1 class="module_title">
+      <span (click)="showOperatePage=false;getTableData0()" class="backIcon">&lt;</span>
+      配件补仓
+    </h1>
+    <div style="margin-bottom: 10px;">
+      <button nz-button nz-button nzType="primary" (click)="add1()" [disabled]="!numberOfChecked">创建补仓计划</button>
+    </div>
+    <div id="tableHeight" appTableHeight>
+      <nz-table class="table_warp" #cameraTable [nzData]="tableData1" [nzLoading]="loading"
+        [(nzPageIndex)]="q1.pageIndex" [(nzTotal)]="q1.total" [(nzPageSize)]="q1.pageSize" [nzShowSizeChanger]="true"
+        [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange1($event)"
+        (nzPageSizeChange)="pageSizeChange1($event)" (nzCurrentPageDataChange)="currentPageDataChange($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th nzShowCheckbox [nzIndeterminate]="isIndeterminate" (nzCheckedChange)="checkAll($event)"></th>
+            <th>序号</th>
+            <th>存货编码</th>
+            <th>存货名称</th>
+            <th>库存数量</th>
+            <th>U8C库存</th>
+            <th>二手仓库存</th>
+            <th>预警线</th>
+            <th>安全线</th>
+            <th>安全缺口</th>
+            <th>最近补仓计划</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of cameraTable.data; index as i">
+            <td nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]" [nzDisabled]="data.disabled"
+              (nzCheckedChange)="refreshStatus()"></td>
+            <td>{{i + 1 + ((q1.pageIndex-1) * q1.pageSize)}}</td>
+            <td>{{data.inventoryCode}}</td>
+            <td>{{data.inventoryName}}</td>
+            <td>{{data.inventoryQuantity}}</td>
+            <td>{{data.u8cInventoryQuantity}}</td>
+            <td>{{data.usedWarehouseQuantity}}</td>
+            <td>{{data.warningThreshold}}</td>
+            <td>{{data.safetyThreshold}}</td>
+            <td>{{data.safetyGapQuantity}}</td>
+            <td>{{data.latestRestockTime}}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-container>
+
+
+  <ng-template #errorTpl let-control>
+    <ng-container *ngIf="control.hasError('maxlength')">
+      最多20个字符!
+    </ng-container>
+    <ng-container *ngIf="control.hasError('required')">
+      请输入
+    </ng-container>
+  </ng-template>

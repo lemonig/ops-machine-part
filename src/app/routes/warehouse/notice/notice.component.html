@@ -1,0 +1,69 @@
+<!--
+ * @Author: Jonny
+ * @Date: 2023-09-05 10:37:27
+ * @LastEditors: Jonny
+ * @LastEditTime: 2023-09-06 10:09:34
+ * @FilePath: \ops-machine-part\src\app\routes\warehouse\notice\notice.component.html
+-->
+
+<div class="card_warp scene">
+  <ng-container>
+    <h1 class="module_title">提醒通知</h1>
+    <div class="query_warp">
+      <button nz-button nzType="primary" (click)="add()">设置通知人姓名</button>
+    </div>
+    <div id="tableHeight" appTableHeight>
+      <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading" [(nzPageIndex)]="q.pageIndex"
+        [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
+        (nzPageIndexChange)="pageIndexChange($event)" (nzPageSizeChange)="pageSizeChange($event)">
+        <thead>
+          <tr style="position: relative;" appTableScroll>
+            <th>序号</th>
+            <th>提醒消息</th>
+            <th>提醒人</th>
+            <th>提醒时间</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data index as i">
+            <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+            <td>{{data.reminderMessage}}</td>
+            <td>{{data.reminderPerson}}</td>
+            <td>{{data.reminderTime}}</td>
+
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+  </ng-container>
+  <!-- 新建编辑 -->
+  <nz-modal nzWidth="500" nzTitle="设置通知人手机号" nzMaskClosable="false" [(nzVisible)]="showOperatePage"
+    (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
+    <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm">
+      <nz-row>
+        <nz-col nzSpan="24">
+          <nz-form-item>
+            <nz-form-label nzSpan="5">姓名</nz-form-label>
+            <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+              <textarea nz-input placeholder="多个以空格隔开" formControlName="name"
+                [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </nz-col>
+        <p>手机号以企业微信个人信息页为准，设置后将在企业微信收到提醒通知</p>
+
+
+      </nz-row>
+    </form>
+  </nz-modal>
+</div>
+
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+</ng-template>

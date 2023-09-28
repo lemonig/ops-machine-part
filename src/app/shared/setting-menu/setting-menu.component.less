@@ -1,0 +1,80 @@
+@import '../../../styles/theme.less';
+
+.menu_warp {
+    width: 100%;
+    height: calc(100vh - 48px);
+    overflow: hidden;
+    position: sticky;
+    top: 0;
+}
+
+.menu_warp ul {
+    padding: 20px 0 0 20px;
+    margin: 0;
+    list-style: none;
+}
+
+.menu_warp ul li {
+    line-height: 24px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.menu_warp ul li.active {
+    color: @primary-color;
+    border-right: 4px solid @primary-color;
+}
+
+.menu_warp ul li i {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+    margin-bottom: 4px;
+    margin-right: 4px;
+}
+
+.list1 {
+    background-image: url(../../../assets/tmp/img/SSetting.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.list2 {
+    background-image: url(../../../assets/tmp/img/SUser.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.list3 {
+    background-image: url(../../../assets/tmp/img/SSite.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.list4 {
+    background-image: url(../../../assets/tmp/img/SFactor.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.list5 {
+    background-image: url(../../../assets/tmp/img/SLog.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.list6 {
+    background-image: url(../../../assets/tmp/img/SMenu.png);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+}
+
+.active .list1,
+.active .list2,
+.active .list3,
+.active .list4,
+.active .list5,
+.active .list6 {
+    background-position: 0 -16px;
+}

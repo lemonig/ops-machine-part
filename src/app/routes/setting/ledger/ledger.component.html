@@ -1,0 +1,145 @@
+<div class="setting_warp user">
+  <div>
+    <app-setting-menu order="1"></app-setting-menu>
+  </div>
+  <div class="card_warp scene">
+    <ng-container>
+      <h1 class="module_title">配件台账</h1>
+      <div class="query_warp">
+        <div>
+          <input style="width:180px;" nz-input placeholder="按编码、型号、规格搜索" [(ngModel)]="proname" />
+          <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+          <button nz-button nzType="default" (click)="download()">导出</button>
+        </div>
+        <div> <button nz-button nzType="default" (click)="add()" [nzLoading]="btnLoading">同步配件库</button>
+        </div>
+      </div>
+      <div class="operate-text">
+        <span>共{{additionalData?.pagination.total}}件，更新时间：{{additionalData?.datatime}}</span>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>存货编码</th>
+              <th>存货名称 </th>
+              <th>规格 </th>
+              <th>型号 </th>
+              <th>计量单位 </th>
+              <th>单价 </th>
+              <th>创建时间 </th>
+              <th nzShowFilter [nzFilters]="listOfFilter" (nzFilterChange)="filterChange($event)">配件类别 </th>
+              <th nzShowFilter [nzFilters]="listOfFilter1" (nzFilterChange)="filterChange1($event)">安全配件 </th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+              <td>{{data.specification}}</td>
+              <td>{{data.modelNumber}}</td>
+              <td>{{data.unitOfMeasure}}</td>
+              <td>{{data.unitPrice}}</td>
+              <td>{{data.createTime}}</td>
+              <td>{{data.accessoryCategoryName}}</td>
+              <td>
+                <img class="switchIcon" (click)="SwitchSafe(data)" *ngIf="!data.isSafetyAccessory"
+                  src="../../../../assets/tmp/img/switchIcon.png">
+                <img class="switchIcon" (click)="SwitchSafe(data)" *ngIf="data.isSafetyAccessory"
+                  src="../../../../assets/tmp/img/switchIcon1.png">
+              </td>
+              <td>
+                <a (click)="modify(data)">编辑</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+    <!-- 新建编辑 -->
+    <nz-modal nzWidth="500" [nzTitle]="operateId ? '编辑' : '新增'" nzMaskClosable="false" [(nzVisible)]="showOperatePage"
+      (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
+      <form *ngIf="showOperatePage" nz-form [formGroup]="operateForm">
+        <nz-row>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">存货编码</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                {{detailData.inventoryCode}}
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">存货名称</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                {{detailData.inventoryName}}
+
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">单价（元）</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <input style="width: 100%;" nz-input placeholder="请填写" formControlName="unitPrice" />
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">配件类别</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-select name="select-error" formControlName="accessoryCategoryId" nzShowSearch nzAllowClear>
+                  <nz-option *ngFor="let item of typeList" [nzValue]="item.id" [nzLabel]="item.name">
+                  </nz-option>
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">安全线</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-input-number formControlName="safetyThreshold" [nzMin]="0" [nzMax]="10000000" [nzStep]="1">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">预警线</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <nz-input-number formControlName="warningThreshold" [nzMin]="0" [nzMax]="100000000" [nzStep]="1">
+                </nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+          <nz-col nzSpan="24">
+            <nz-form-item>
+              <nz-form-label nzSpan="5">备注</nz-form-label>
+              <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+                <textarea nz-input placeholder="请填写" formControlName="note"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"></textarea>
+              </nz-form-control>
+            </nz-form-item>
+          </nz-col>
+        </nz-row>
+      </form>
+    </nz-modal>
+  </div>
+</div>
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+</ng-template>
