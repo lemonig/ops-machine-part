@@ -4,7 +4,8 @@ import { FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors, 
 import { NzMessageService, NzModalService } from 'ng-zorro-antd';
 import { NzFormatEmitEvent, NzTreeNodeOptions } from 'ng-zorro-antd/core';
 import { NzTreeComponent } from 'ng-zorro-antd/tree';
-
+import { BehaviorSubject, Observable } from 'rxjs';
+import { debounceTime, map, switchMap } from 'rxjs/operators';
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
@@ -31,6 +32,32 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.getTableData();
     this.getTree()
+
+
+    const getRandomNameList = (name: string) =>
+      this._http
+        .post(`/api/user/searchAvailableUser`, {
+          name: name
+        })
+        .pipe(map((res: any) => res.data))
+        .pipe(
+          map((list: any) => {
+            return list.map((item: any) => ({
+              ...item,
+              label: item.nickname,
+              value: item.id
+            }));
+          })
+        );
+    const optionList$: Observable<any[]> = this.searchChange$
+      .asObservable()
+      .pipe(debounceTime(500))
+      .pipe(switchMap(getRandomNameList));
+    optionList$.subscribe(data => {
+      this.listOfOption = data;
+      this.isLoading = false;
+    });
+
   }
   getTableData() {
     let params = {};
@@ -99,6 +126,7 @@ export class UserComponent implements OnInit {
       if (res.success) {
         this.getTableData();
         this.showAddPage = false;
+        this.addForm.reset()
       } else {
         this.msg.error(res.message);
       }
@@ -117,7 +145,7 @@ export class UserComponent implements OnInit {
     })
   }
 
-
+  searchChange$ = new BehaviorSubject('');
   //添加
   addForm: FormGroup = this.fb.group({
     idList: [null, [Validators.required]]
@@ -125,19 +153,30 @@ export class UserComponent implements OnInit {
   });
   showAddPage: boolean = false;
   listOfOption: Array<{ label: string; value: string }> = [];
+  isLoading = false;
+  onSearch(value: string): void {
+    this.isLoading = true;
+    this.searchChange$.next(value);
+  }
+
+
   add() {
-    this._http.post(`/api/user/searchAvailableUser`,).subscribe((res: any) => {
-      if (res.success) {
-        this.listOfOption = res.data.map(item => ({
-          ...item,
-          label: item.nickname,
-          value: item.id
-        }))
-        this.showAddPage = true
-      } else {
-        this.msg.error(res.message);
-      }
-    })
+    this.showAddPage = true
+
+
+
+    // this._http.post(`/api/user/searchAvailableUser`,).subscribe((res: any) => {
+    //   if (res.success) {
+    //     this.listOfOption = res.data.map(item => ({
+    //       ...item,
+    //       label: item.nickname,
+    //       value: item.id
+    //     }))
+    //     this.showAddPage = true
+    //   } else {
+    //     this.msg.error(res.message);
+    //   }
+    // })
   }
   confirmSelect() {
     for (const i in this.addForm.controls) {
@@ -159,7 +198,6 @@ export class UserComponent implements OnInit {
     this._http.post(`/api/common/region/tree`).subscribe((res: any) => {
       if (res.success) {
         this.loopTree(res.data)
-        console.log(res.data);
         this.nodes = res.data
 
       }
@@ -183,7 +221,6 @@ export class UserComponent implements OnInit {
       }
     }
     loop(tree)
-    console.log(count);
 
   }
   defaultCheckedKeys: any[] = [];
@@ -196,7 +233,6 @@ export class UserComponent implements OnInit {
 
 
   nzCheck(event: NzFormatEmitEvent): void {
-    console.log(event);
     this.defaultCheckedKeys = event.keys
   }
 

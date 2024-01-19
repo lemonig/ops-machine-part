@@ -177,7 +177,7 @@ export class ApplicateComponent implements OnInit {
   workOrdertatus: number = 2
   detail(id: any) {//TODO FALSE
     this.operateId = id
-    this._http.post(`/api/verification/get`, { id }).subscribe((res: any) => {
+    this._http.post(`/api/requisition/get`, { id }).subscribe((res: any) => {
       this.isSpinning = false
       if (res.success) {
         // this.workOrdertatus = res.data.status
@@ -244,7 +244,7 @@ export class ApplicateComponent implements OnInit {
     pageSize: 10,
     total: 1,
   }
-  proname: string
+  proname3: string
   tableData3: any[] = []
   invontoryVis: boolean = false
   inventorySelected: any = { id: '' }; // 用于存储选中的行的 id
@@ -254,7 +254,7 @@ export class ApplicateComponent implements OnInit {
       page: this.q3.pageIndex,
       size: this.q3.pageSize,
       data: {
-        name: this.proname,
+        name: this.proname3,
       }
     }
     this.loading = true;

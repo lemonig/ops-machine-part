@@ -7,7 +7,7 @@
 -->
 <div class="setting_warp user">
   <div>
-    <app-setting-menu order="3"></app-setting-menu>
+    <app-setting-menu order="5"></app-setting-menu>
   </div>
   <div class="card_warp">
     <ng-container *ngIf="!showOperatePage">
@@ -145,9 +145,17 @@
           <nz-form-label nzRequired nzSpan="5">人员</nz-form-label>
           <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
             <nz-select [nzMaxTagCount]="3" [nzMaxTagPlaceholder]="tagPlaceHolder" nzMode="multiple" nzPlaceHolder="请选择"
-              formControlName="idList">
-              <nz-option *ngFor="let option of listOfOption" [nzLabel]="option.label" [nzValue]="option.value">
+              formControlName="idList" nzShowSearch nzServerSearch (nzOnSearch)="onSearch($event)">
+
+              <ng-container *ngFor="let option of listOfOption">
+                <nz-option *ngIf="!isLoading" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+              </ng-container>
+              <nz-option *ngIf="isLoading" nzDisabled nzCustomContent>
+                <i nz-icon nzType="loading" class="loading-icon"></i> 数据加载中...
               </nz-option>
+
+
+
             </nz-select>
           </nz-form-control>
         </nz-form-item>

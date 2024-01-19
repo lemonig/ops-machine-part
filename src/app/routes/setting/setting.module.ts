@@ -13,10 +13,12 @@ import { SettingRoutingModule } from './setting-routing.module';
 import { CategaryComponent } from './categary/categary.component';
 import { LedgerComponent } from './ledger/ledger.component';
 import { UserComponent } from './user/user.component';
+import { PackageComponent } from './package/package.component';
+import { DeviceComponent } from './device/device.component';
 
 
 @NgModule({
-  declarations: [CategaryComponent, LedgerComponent, UserComponent],
+  declarations: [CategaryComponent, LedgerComponent, UserComponent, PackageComponent, DeviceComponent],
   imports: [
     CommonModule,
     SettingRoutingModule,

@@ -1,0 +1,132 @@
+<div class="setting_warp user">
+  <div>
+    <app-setting-menu order="4"></app-setting-menu>
+  </div>
+  <div class="card_warp">
+    <ng-container *ngIf="!showDetailPage">
+      <h1 class="module_title">仪器与配件</h1>
+      <div class="query_warp">
+        <input class="BSpace" style="width:200px;" nz-input placeholder="按仪器编码和名称、配件编码和名称搜索" [(ngModel)]="keyword" />
+        <button class="BSpace" nz-button nzType="primary" (click)="search()">查询</button>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData" [nzLoading]="loading"
+          [(nzPageIndex)]="q.pageIndex" [(nzTotal)]="q.total" [(nzPageSize)]="q.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange($event)"
+          (nzPageSizeChange)="pageSizeChange($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>存货编码</th>
+              <th>仪器名称</th>
+              <th>规格</th>
+              <th>型号</th>
+              <th>关联配件</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+              <td>{{data.specification}}</td>
+              <td>{{data.modelNumber}}</td>
+              <td>{{data.instrumentNum}}</td>
+              <td>
+                <a (click)="getTableData1(data.id)">配置</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="showDetailPage">
+      <!-- <h1 class="module_title">用户管理</h1> -->
+      <h1 class="module_title">
+        <span (click)="showDetailPage =false;getTableData()" class="backIcon">&lt;</span>
+        配置
+      </h1>
+      <div class="query_warp">
+        <button nz-button nzType="default" (click)="add2()">新建</button>
+      </div>
+      <div id="tableHeight" appTableHeight>
+        <nz-table class="table_warp" #basicTable [nzData]="tableData1" [nzLoading]="loading"
+          [(nzPageIndex)]="q1.pageIndex" [(nzTotal)]="q1.total" [(nzPageSize)]="q1.pageSize" [nzShowSizeChanger]="true"
+          [nzFrontPagination]="false" (nzPageIndexChange)="pageIndexChange1($event)"
+          (nzPageSizeChange)="pageSizeChange1($event)">
+          <thead>
+            <tr style="position: relative;" appTableScroll>
+              <th>序号</th>
+              <th>存货编码</th>
+              <th>配件名称</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of basicTable.data index as i">
+              <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+              <td>{{data.inventoryCode}}</td>
+              <td>{{data.inventoryName}}</td>
+
+              <td>
+                <a (click)="delete2(data.id)">数据删除</a>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </ng-container>
+  </div>
+</div>
+<ng-template #errorTpl let-control>
+  <ng-container *ngIf="control.hasError('maxlength')">
+    最多20个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('required')">
+    请输入
+  </ng-container>
+  <ng-container *ngIf="control.hasError('minlength')">
+    最少8个字符!
+  </ng-container>
+  <ng-container *ngIf="control.hasError('forbiddePsw')">
+    至少包含字母、数字和特殊字符中的两项
+  </ng-container>
+</ng-template>
+
+
+
+<nz-modal nzWidth="600" nzMaskClosable="false" [(nzVisible)]="showOperatePage2" nzTitle="关联配件"
+  [nzOkLoading]="btnLoading" (nzOnCancel)=" closeOperatePage2()" (nzOnOk)="saveOperateData2()">
+  <form *ngIf="showOperatePage2" nz-form [formGroup]="operateForm2" [nzNoColon]="true">
+    <nz-row>
+
+      <nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzSpan="5" nzRequired>配件存货编码</nz-form-label>
+          <nz-form-control nzSpan="19" [nzErrorTip]="errorTpl">
+            <input placeholder="请输入" nz-input formControlName="inventoryCode" (input)="onInput($event)"
+              (ngModelChange)="onInputChange($event)" [nzAutocomplete]="auto" />
+            <nz-autocomplete nzBackfill #auto>
+              <nz-auto-option *ngFor="let option of goodList" [nzValue]="option.inventoryCode">
+                {{ option.inventoryCode }}
+              </nz-auto-option>
+            </nz-autocomplete>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+      <nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzSpan="5">配件存货名称</nz-form-label>
+          <nz-form-control nzSpan="19" [nzErrorTip]="errorTpl">
+            {{inventoryName}}
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
+    </nz-row>
+
+  </form>
+</nz-modal>

@@ -5,7 +5,7 @@
       <div class="query_warp">
         <div>
           <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
-            [(ngModel)]="startDate0"></nz-date-picker>
+            [(ngModel)]="beginTime"></nz-date-picker>
           -
           <nz-date-picker [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width: 120px;"
             [(ngModel)]="endTime">
@@ -117,7 +117,7 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.value :'--'}}
+            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.label :'--'}}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="站点">{{detailData.station ? detailData.station :'--'}}
             </nz-descriptions-item>
@@ -129,7 +129,7 @@
 
             <nz-descriptions-item nzTitle="申请时间">{{detailData.applicationTime| date:'yyyy-MM-dd HH:mm:ss'}}
             </nz-descriptions-item>
-            <nz-descriptions-item nzTitle="发货方式">{{detailData.shippingMethod ?detailData.shippingMethod.value :'--'}}
+            <nz-descriptions-item nzTitle="发货方式">{{detailData.shippingMethod ?detailData.shippingMethod.label :'--'}}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="项目编号">{{detailData.projectNumber ?detailData.projectNumber :'--'}}
             </nz-descriptions-item>
@@ -137,7 +137,7 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item nzTitle="单据状态">{{ detailData.status ?detailData.status.value :'--' }}
+            <nz-descriptions-item nzTitle="单据状态">{{ detailData.status ?detailData.status.label :'--' }}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="取消人">{{ detailData.cancellationUser ? detailData.cancellationUser:'--' }}
             </nz-descriptions-item>
@@ -419,8 +419,15 @@
   <!--tab0 存货编码 -->
   <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
     (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
-    nzWidth="1000">
+    nzTitle="存货" nzWidth="1000">
     <ng-template #modalContent1>
+      <div class="query_warp">
+        <div>
+          <input style="width:180px;" nz-input placeholder="按编码、型号、规格搜索" [(ngModel)]="proname3" />
+          <button class="BSpace" nz-button nzType="primary" (click)="search3()">查询</button>
+        </div>
+        <div></div>
+      </div>
       <nz-table class="table_warp" #basicTable [nzData]="tableData3" [(nzPageIndex)]="q3.pageIndex"
         [(nzTotal)]="q3.total" [(nzPageSize)]="q3.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
         (nzPageIndexChange)="pageIndexChange3($event)" (nzPageSizeChange)="pageSizeChange3($event)">

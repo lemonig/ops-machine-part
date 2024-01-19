@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { _HttpClient } from '@delon/theme';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { NzMessageService, NzModalService } from 'ng-zorro-antd';
+import { NzMessageService, NzModalService, UploadXHRArgs } from 'ng-zorro-antd';
 import { ExcelService } from '@core/excel/excel.service';
+import { UploadFile } from 'ng-zorro-antd/upload';
+import { Observable, Observer } from 'rxjs';
 
 @Component({
   selector: 'app-ledger',
@@ -34,14 +36,20 @@ export class LedgerComponent implements OnInit {
 
   }
   proname: string
+  isStop: string
+  isSafe: string
+  type: string
+  matter: string
   getTableData() {
     let params = {
       page: this.q.pageIndex,
       size: this.q.pageSize,
       data: {
         name: this.proname,
-        accessoryCategoryIdList: this.listOfSearch,
-        isSafetyAccessoryList: this.listOfSearch1,
+        "isDisabled": this.isStop,
+        "classification": this.type,
+        "isSafetyAccessory": this.isSafe,
+        "accessoryCategoryId": this.matter
       }
     }
     this.loading = true;
@@ -78,7 +86,19 @@ export class LedgerComponent implements OnInit {
 
   showOperatePage: boolean = false;
   operateId: any = null;
-  operateForm: FormGroup;
+  operateForm: FormGroup = this.fb.group({
+    unitPrice: [null],
+    note: [null],
+    accessoryCategoryId: [null],
+    isSafetyAccessory: [false],
+    safetyThreshold: [null],
+    warningThreshold: [null],
+    "classification": [null],
+    "seriesName": [''],
+    "seriesVersion": [null],
+    isDisabled: [false],
+
+  });
   add() {
     this.btnLoading = true
     this.loading = true;
@@ -112,7 +132,6 @@ export class LedgerComponent implements OnInit {
   }
 
   listOfFilter = [];
-  listOfFilter1 = [{ text: '是', value: true }, { text: '否', value: false }];
   listOfSearch: string[] = [];
   listOfSearch1: string[] = [];
   filterChange(value: string[]): void {
@@ -138,38 +157,109 @@ export class LedgerComponent implements OnInit {
       this.loading = false;
       if (res.success) {
         this.typeList = res.data;
-        this.listOfFilter = res.data.map(item => ({ text: item.name, value: item.id }))
+        this.listOfFilter = res.data
       } else {
         this.msg.error(res.message);
       }
     })
   }
+
+
+
+
+  showUploadList = {
+    showPreviewIcon: true,
+    showRemoveIcon: true,
+    hidePreviewIconInNonImage: true
+  };
+
+  previewImage: string | undefined = '';
+  previewVisible = false;
+
+
+  handlePreview = (file: UploadFile) => {
+    this.previewImage = file.url || file.thumbUrl;
+    this.previewVisible = true;
+  };
+
+
   detailData: any
+
+
+
+  getDetail(params) {
+    return new Promise((rso, rej) => {
+      this._http.post('/api/accessory/get', params).subscribe((res: any) => {
+        if (res.success) {
+          rso(res)
+        } else {
+          rej(res)
+          this.msg.error(res.message);
+        }
+      })
+    })
+
+  }
+  lookUpimg(data) {
+    //放大图片初始化数据
+    this.totalIdx = 0;
+    this.imgList = [];
+    data.map((item: any) => {
+      item.index = this.totalIdx++;
+      this.imgList.push(item);
+    })
+    this.showBigImg = true;
+    this.imgIdx = 0
+
+  }
+
+  showBigImg: boolean = false;
+  imgList: any[] = [];
+  imgIdx: number = 0;
+  totalIdx: number = 0;
+  bigImg(idx: any) {
+    this.imgIdx = idx;
+  }
+  goPre() {
+    if (this.imgIdx >= 1) {
+      this.imgIdx--;
+    }
+  }
+  goNext() {
+    if (this.imgIdx < (this.totalIdx - 1)) {
+      this.imgIdx++;
+    }
+  }
+
   modify(data: any) {
-    this.operateId = data.id;
-    this.detailData = data
-    this.operateForm = this.fb.group({
-      unitPrice: [data.unitPrice, [Validators.maxLength(20)]],
-      note: [data.note, [Validators.maxLength(20)]],
-      accessoryCategoryId: [data.accessoryCategoryId, [Validators.maxLength(20)]],
-      isSafetyAccessory: [data.isSafetyAccessory, [Validators.maxLength(20)]],
-      safetyThreshold: [data.safetyThreshold, [Validators.maxLength(20)]],
-      warningThreshold: [data.warningThreshold, [Validators.maxLength(20)]],
+    this.operateId = data;
+
+    this.getDetail({
+      id: data
+    }).then((res: any) => {
+      this.detailData = res.data
+      this.operateForm.patchValue(res.data)
+      this.showOperatePage = true;
+      this.fileList = res.data.photoList
+
+
 
     })
-    this.showOperatePage = true;
+
   }
   saveOperateData() {
     for (const i in this.operateForm.controls) {
       this.operateForm.controls[i].markAsDirty();
       this.operateForm.controls[i].updateValueAndValidity();
     }
-    if (this.operateForm.invalid) {
-      return
-    }
+    // if (this.operateForm.invalid) {
+    //   return
+    // }
     let params: any = {};
     let data = JSON.parse(JSON.stringify(this.operateForm.value));
     params = data;
+
+    params.photoList = this.fileList.map(item => 'response' in item ? item.response : item)
 
     if (this.operateId) {
       params.id = this.operateId;
@@ -204,5 +294,33 @@ export class LedgerComponent implements OnInit {
   }
 
 
+
+  //文件上传
+  fileList: any[] = [];
+  //上传图片
+  fileUpload = (item: UploadXHRArgs) => {
+    const formData = new FormData();
+    formData.append('file', item.file as any);
+    return this._http.post(`/api/common/upload/picture`, formData).subscribe((res: any) => {
+      if (res.success) {
+        item.onSuccess(res.data, item.file, {});
+      } else {
+        item.onError(true, item.file);
+      }
+    })
+  }
+  beforeUpload = (file: File) => {
+    //验证图片是否合格
+    return new Observable((observer: Observer<boolean>) => {
+      const isLt5M = (file.size / 1024 / 1024) < 5;
+      if (!isLt5M) {
+        this.msg.error('文件必须小于5MB!');
+        observer.complete();
+        return;
+      }
+      observer.next(true);
+      observer.complete();
+    })
+  }
 
 }

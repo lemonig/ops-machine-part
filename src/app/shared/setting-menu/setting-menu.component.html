@@ -2,5 +2,7 @@
     <ul>
         <li (click)="goUrl('setting/ledger')" [ngClass]="{active: order == 1}"><i class="list1"></i>配件台账</li>
         <li (click)="goUrl('setting/categary')" [ngClass]=" {active: order==2}"><i class="list3"></i>配件类别</li>
-        <li (click)="goUrl('setting/user')" [ngClass]="{active: order == 3}"><i class="list2"></i>权限设置</li>
+        <li (click)="goUrl('setting/package')" [ngClass]=" {active: order==3}"><i class="list3"></i>配件包</li>
+        <li (click)="goUrl('setting/device')" [ngClass]=" {active: order==4}"><i class="list3"></i>仪器与配件</li>
+        <li (click)="goUrl('setting/user')" [ngClass]="{active: order == 5}"><i class="list2"></i>权限设置</li>
     </ul>
