@@ -60,7 +60,7 @@ export class UserLoginComponent implements OnInit {
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         localStorage.setItem('hasUserMenu', res.data.isTenantOwner)
         //跳转页面
-        this.router.navigateByUrl('/part/ledger');
+        this.router.navigateByUrl('/part/applicate');
         //获取权限
         // this._http.get('api/setting/menu/manager/tree/view').subscribe((res: any) => {
         //   if (res.success) {

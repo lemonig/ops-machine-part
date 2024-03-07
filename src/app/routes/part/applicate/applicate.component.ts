@@ -122,27 +122,56 @@ export class ApplicateComponent implements OnInit {
 
   // 详情
   //取消申请
+  showOperatePage1: boolean = false
+  operateForm1: FormGroup = this.fb.group({
+    cancelRemark: [null, [Validators.maxLength(300)]],
+  })
+
   concel() {
-    this.modal.confirm({
-      nzContent: '确定取消该申请单吗？',
-      nzOkText: '确认',
-      nzCancelText: '取消',
-      nzTitle: '删除',
-      nzOnOk: () => {
-        this._http.post(`/api/requisition/cancel`, { requisitionId: this.requisitionId }).subscribe((res: any) => {
-
-          if (res.success) {
-            this.getDetail(this.requisitionId)
-            this.msg.success(res.message);
-          } else {
-            this.msg.error(res.message);
-          }
-        })
-      },
-      nzOnCancel: () => { }
-    })
-
+    this.showOperatePage1 = true
   }
+
+  handleOperatePage0Ok1() {
+    let params = this.operateForm1.value
+    params.requisitionId = this.requisitionId
+    this._http.post(`/api/requisition/cancel`, params).subscribe((res: any) => {
+      if (res.success) {
+        this.getDetail(this.requisitionId)
+        this.msg.success(res.message);
+        this.showOperatePage1 = false;
+        this.operateForm1.reset()
+      } else {
+        this.msg.error(res.message);
+      }
+    })
+  }
+
+
+  // 添加备注
+  showOperatePage3: boolean = false
+  operateForm3: FormGroup = this.fb.group({
+    opRemark: [null, [Validators.maxLength(300)]],
+  })
+
+  addRemark() {
+    this.showOperatePage3 = true
+  }
+
+  handleOperatePage0Ok3() {
+    let params = this.operateForm3.value
+    params.requisitionId = this.requisitionId
+    this._http.post(`/api/requisition/opRemark/add`, params).subscribe((res: any) => {
+      if (res.success) {
+        this.getDetail(this.requisitionId)
+        this.msg.success(res.message);
+        this.showOperatePage3 = false;
+        this.operateForm3.reset();
+      } else {
+        this.msg.error(res.message);
+      }
+    })
+  }
+
 
   showDetailPage: boolean = false;
   operateId: any = null;

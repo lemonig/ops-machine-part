@@ -84,6 +84,8 @@
         <span (click)="showDetailPage =false" class="backIcon">&lt;</span>
         申请记录
         <button style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+        <button style="float: right;" nz-button (click)="addRemark()">添加备注</button>
+
       </h1>
       <!-- <div class="query_warp">
         <div></div>
@@ -155,7 +157,13 @@
               :'--' }}
             </nz-descriptions-item>
 
-            <nz-descriptions-item [nzSpan]="4" nzTitle="备注">{{detailData.notes ?detailData.notes :'--' }}
+            <nz-descriptions-item [nzSpan]="1" nzTitle="申请单状态">{{detailData.approvalStatus.label
+              ?detailData.approvalStatus.label :'--' }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="3" nzTitle="取消原因">{{detailData.cancelRemark ?detailData.cancelRemark :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="4" nzTitle="办理人备注">{{detailData.opRemark ?detailData.opRemark :'--' }}
             </nz-descriptions-item>
 
 
@@ -186,12 +194,15 @@
                 <td>{{data.instrumentName}}</td>
                 <td>{{data.instrumentBrandModel}}</td>
                 <td>{{data.materialName}}</td>
-                <td>{{data.unitOfMeasure?.label}}</td>
                 <td>{{data.materialType?.label}}</td>
+                <td>{{data.unitOfMeasure?.label}}</td>
                 <td>{{data.quantity}}</td>
                 <td>{{data.requisitionType?.label}}</td>
                 <td>{{data.requisitionReason}}</td>
-                <td>{{data.photo}}</td>
+                <td>
+                  <!-- <img :src="{{data.photoList[0].url}}" alt=""> -->
+                  <a href="{{data.photoList[0].url}}" target="_blank">照片</a>
+                </td>
                 <td>{{data.urgencyLevel?.label}}</td>
 
               </tr>
@@ -442,7 +453,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let data of basicTable.data index as i">
+          <tr *ngFor="let data of basicTable.data index as i" (click)="handleRadioClick($event, data)"
+            style="cursor: pointer;">
             <td>
               <label nz-radio [ngModel]="data.id === inventorySelected.id"
                 (click)="handleRadioClick($event, data)"></label>
@@ -484,6 +496,43 @@
   </nz-modal>
 
 
+  <nz-modal *ngIf="showOperatePage1" [nzVisible]="showOperatePage1" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage1 = false" (nzOnOk)="handleOperatePage0Ok1()" nzTitle="取消申请单">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm1">
+          <nz-form-item>
+            <nz-form-label nzRequired nzSpan="4">取消原因</nz-form-label>
+            <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+              <textarea formControlName="cancelRemark" placeholder="请输入" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                style="width: 100%;">
+                </textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
+
+
+
+  <nz-modal *ngIf="showOperatePage3" [nzVisible]="showOperatePage3" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage3 = false" (nzOnOk)="handleOperatePage0Ok3()" nzTitle="备注">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm3">
+          <nz-form-item>
+            <nz-form-label nzRequired nzSpan="4">备注</nz-form-label>
+            <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+              <textarea formControlName="opRemark" placeholder="请输入" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                style="width: 100%;">
+                </textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
 
 
   <!-- tab3核销单 -->

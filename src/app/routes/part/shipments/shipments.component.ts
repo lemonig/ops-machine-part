@@ -71,7 +71,7 @@ export class ShipmentsComponent implements OnInit {
 
           this.tableData = res.data;
           //分页
-          this.q.total = res.additional_data.total;
+          this.q.total = res.additional_data.pagination.total;
         } else {
           this.msg.error(res.message);
         }
@@ -107,6 +107,7 @@ export class ShipmentsComponent implements OnInit {
   isIndeterminate = false;
   listOfDisplayData: any[] = [];
   listOfAllData: any[] = [];
+  listOfAllDataCopy: any[] = [];
   mapOfCheckedId: { [key: string]: boolean } = {};
   numberOfChecked = 0;
   q1: any = {
@@ -116,10 +117,7 @@ export class ShipmentsComponent implements OnInit {
   }
   deliverGoods() {
     this.invontoryVis = true
-
     this.search1();
-
-
   }
   //分页
   pageIndexChange1($event: any) {
@@ -144,7 +142,6 @@ export class ShipmentsComponent implements OnInit {
       page: this.q1.pageIndex,
       size: this.q1.pageSize,
       data: {
-
         name: this.projectName,
         urgencyLevel: this.urgencyLevel
       }
@@ -154,10 +151,10 @@ export class ShipmentsComponent implements OnInit {
     this._http.post('/api/requisition/delivery/page', params).subscribe((res: any) => {
       this.loading = false;
       if (res.success) {
-
         this.listOfAllData = res.data;
+        this.listOfAllDataCopy = JSON.parse(JSON.stringify(res.data));
         //分页
-        this.q.total = res.additional_data.total;
+        this.q.total = res.additional_data.pagination.total;
       } else {
         this.msg.error(res.message);
       }
@@ -171,35 +168,44 @@ export class ShipmentsComponent implements OnInit {
     this.refreshStatus();
   }
   refreshStatus(): void {
+    console.log(this.listOfDisplayData);
+
     this.isAllDisplayDataChecked = this.listOfDisplayData
-      .filter(item => !item.disabled)
       .every(item => this.mapOfCheckedId[item.id]);
+    console.log(this.isAllDisplayDataChecked);
+
     this.isIndeterminate =
-      this.listOfDisplayData.filter(item => !item.disabled).some(item => this.mapOfCheckedId[item.id]) &&
+      this.listOfDisplayData.some(item => this.mapOfCheckedId[item.id]) &&
       !this.isAllDisplayDataChecked;
     this.numberOfChecked = this.listOfAllData.filter(item => this.mapOfCheckedId[item.id]).length;
   }
 
   checkAll(value: boolean): void {
-    this.listOfDisplayData.filter(item => !item.disabled).forEach(item => (this.mapOfCheckedId[item.id] = value));
+    this.listOfDisplayData.forEach(item => (this.mapOfCheckedId[item.id] = value));
     this.refreshStatus();
   }
 
-  operateData(): void {
-    this.isOperating = true;
-    setTimeout(() => {
-      this.listOfAllData.forEach(item => (this.mapOfCheckedId[item.id] = false));
-      this.refreshStatus();
-      this.isOperating = false;
-    }, 1000);
-  }
+  // operateData(): void {
+  //   this.isOperating = true;
+  //   setTimeout(() => {
+  //     this.listOfAllData.forEach(item => (this.mapOfCheckedId[item.id] = false));
+  //     this.refreshStatus();
+  //     this.isOperating = false;
+  //   }, 1000);
+  // }
   handleInvontoryCancel(): void {
     this.invontoryVis = false;
     this.operateId = null
+    this.listOfAllData = []
   }
+
   handleInvontoryOk(): void {
+    console.log(this.mapOfCheckedId);
+
     let params = {
-      requisitionIdList: Reflect.ownKeys(this.mapOfCheckedId)
+      requisitionIdList: Reflect.ownKeys(this.mapOfCheckedId).filter(function (key) {
+        return this.mapOfCheckedId[key] === true;
+      })
     }
     this.btnLoading = true;
     this._http.post(`/api/delivery/add`, params).subscribe((res: any) => {
@@ -250,6 +256,17 @@ export class ShipmentsComponent implements OnInit {
   }
 
   // 填充物流订单号
+  logisticsList: any[] = []
+  getLogistics() {
+    this._http.post('/api/common/express/list').subscribe((res: any) => {
+      if (res.success) {
+        this.logisticsList = res.data;
+      } else {
+        this.msg.error(res.message);
+      }
+    })
+
+  }
   showOperatePage: boolean = false
   orderForm: FormGroup
 
@@ -276,8 +293,10 @@ export class ShipmentsComponent implements OnInit {
   }
 
   edit() {
+    this.getLogistics()
     this.showOperatePage = true
     this.orderForm = this.fb.group({
+      trackingCompany: [null, [Validators.required,]],
       trackingNumber: [null, [Validators.required,]],
     })
 

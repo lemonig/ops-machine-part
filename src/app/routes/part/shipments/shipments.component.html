@@ -70,8 +70,7 @@
 
 <!-- 发货 -->
 <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
-  (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
-  nzWidth="1000">
+  (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()" nzWidth="1000">
   <ng-template #modalContent1>
     <div class="query_warp">
       <div>
@@ -82,18 +81,21 @@
           <nz-option nzValue="1" nzLabel="一般"></nz-option>
           <nz-option nzValue="2" nzLabel="紧急"></nz-option>
         </nz-select>
+        <button class="BSpace" nz-button nzType="primary" (click)="search1()">查询</button>
+
       </div>
-      <button nz-button nzType="default" (click)="add()">创建发货单</button>
+      <!-- <button nz-button nzType="default" (click)="add()">创建发货单</button> -->
       <div></div>
     </div>
     <nz-table class="table_warp" #basicTable [nzData]="listOfAllData" [(nzPageIndex)]="q1.pageIndex"
       [(nzTotal)]="q1.total" [(nzPageSize)]="q1.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
-      (nzPageIndexChange)="pageIndexChange1($event)" (nzPageSizeChange)="pageSizeChange1($event)">
+      (nzPageIndexChange)="pageIndexChange1($event)" (nzPageSizeChange)="pageSizeChange1($event)"
+      (nzCurrentPageDataChange)="currentPageDataChange($event)">
       <thead>
         <tr style="position: relative;" appTableScroll>
           <th nzShowCheckbox [(nzChecked)]="isAllDisplayDataChecked" [nzIndeterminate]="isIndeterminate"
             (nzCheckedChange)="checkAll($event)"></th>
-          <th>序号</th>
+          <th>单据号</th>
           <th>申请人</th>
           <th>申请时间 </th>
           <th>紧急程度 </th>
@@ -101,6 +103,7 @@
           <th>运维地区 </th>
           <th>申请件数 </th>
           <th>已发件数 </th>
+          <th>待发件数 </th>
           <th>应发件数 </th>
           <th>库存件数 </th>
         </tr>
@@ -109,13 +112,14 @@
         <tr *ngFor="let data of basicTable.data index as i">
           <td nzShowCheckbox [(nzChecked)]="mapOfCheckedId[data.id]" [nzDisabled]="data.disabled"
             (nzCheckedChange)="refreshStatus()"></td>
-          <td>{{i + 1 + ((q1.pageIndex-1) * q1.pageSize)}}</td>
+          <td>{{data?.requisitionNumber}}</td>
           <td>{{data.applicant}}</td>
           <td>{{data.applicationTime}}</td>
           <td>{{data.urgencyLevel.label}}</td>
           <td>{{data.shippingMethod.label}}</td>
           <td>{{data.maintenanceRegion}}</td>
           <td>{{data.requestedQuantity}}</td>
+          <td>{{data.unDeliveredQuantity}}</td>
           <td>{{data.deliveredQuantity}}</td>
           <td>{{data.shouldSendQuantity}}</td>
           <td [ngClass]="{invalidTd:data.shouldSendQuantity < data.shouldSendQuantity }">{{data.inventoryQuantity}}</td>
@@ -265,6 +269,17 @@
   (nzOnCancel)="showOperatePage=false" [nzOkLoading]="btnLoading" (nzOnOk)="saveOperateData()">
   <form *ngIf="showOperatePage" nz-form [formGroup]="orderForm">
     <nz-row>
+      <nz-col nzSpan="24">
+        <nz-form-item>
+          <nz-form-label nzRequired nzSpan="5">公司编号</nz-form-label>
+          <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
+            <nz-select formControlName="trackingCompany">
+              <nz-option *ngFor="let o of logisticsList" [nzValue]="o.code" [nzLabel]="o.name"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </nz-col>
+
       <nz-col nzSpan="24">
         <nz-form-item>
           <nz-form-label nzRequired nzSpan="5">物流订单</nz-form-label>

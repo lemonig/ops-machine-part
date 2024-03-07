@@ -24,14 +24,15 @@
           <ul nz-menu>
             <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'applicate'}"
               (click)="goUrl('/part/applicate')">申请记录</li>
-            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'ledger'}"
-              (click)="goUrl('/part/ledger')">出库台账</li>
-            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'statis'}"
-              (click)="goUrl('/part/statis')">领用统计</li>
             <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'shipments'}"
               (click)="goUrl('/part/shipments')">发货记录</li>
             <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'verified'}"
               (click)="goUrl('/part/verified')">扣减核销</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'ledger'}"
+              (click)="goUrl('/part/ledger')">出库台账</li>
+            <li nz-menu-item [ngClass]="{menuActive: activeUrl.split('/')[2] == 'statis'}"
+              (click)="goUrl('/part/statis')">领用统计</li>
+
           </ul>
         </nz-dropdown-menu>
       </li>

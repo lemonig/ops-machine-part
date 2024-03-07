@@ -16,7 +16,7 @@ import { ShipmentsComponent } from './shipments/shipments.component'
 import { VerifiedComponent } from './verified/verified.component'
 
 const routes: Routes = [
-  { path: '', component: LedgerComponent, canActivate: [CanActivateService] },
+  { path: '', component: ApplicateComponent, canActivate: [CanActivateService] },
   { path: 'applicate', component: ApplicateComponent, canActivate: [CanActivateService] },
   { path: 'ledger', component: LedgerComponent, canActivate: [CanActivateService] },
   { path: 'statis', component: StatisComponent, canActivate: [CanActivateService] },
