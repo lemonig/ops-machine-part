@@ -151,8 +151,14 @@ export class ShipmentsComponent implements OnInit {
     this._http.post('/api/requisition/delivery/page', params).subscribe((res: any) => {
       this.loading = false;
       if (res.success) {
-        this.listOfAllData = res.data;
-        this.listOfAllDataCopy = JSON.parse(JSON.stringify(res.data));
+        this.listOfAllData = res.data.map(item => (
+          {
+            ...item,
+            disabled: !item.inventoryQuantity
+          }
+        ));
+        this.listOfAllDataCopy = JSON.parse(JSON.stringify(this.listOfAllData));
+
         //分页
         this.q.total = res.additional_data.pagination.total;
       } else {
@@ -171,17 +177,23 @@ export class ShipmentsComponent implements OnInit {
     console.log(this.listOfDisplayData);
 
     this.isAllDisplayDataChecked = this.listOfDisplayData
+      .filter(item => !item.disabled)
       .every(item => this.mapOfCheckedId[item.id]);
     console.log(this.isAllDisplayDataChecked);
 
     this.isIndeterminate =
-      this.listOfDisplayData.some(item => this.mapOfCheckedId[item.id]) &&
+      this.listOfDisplayData
+        .filter(item => !item.disabled)
+        .some(item => this.mapOfCheckedId[item.id]) &&
       !this.isAllDisplayDataChecked;
+
     this.numberOfChecked = this.listOfAllData.filter(item => this.mapOfCheckedId[item.id]).length;
   }
 
   checkAll(value: boolean): void {
-    this.listOfDisplayData.forEach(item => (this.mapOfCheckedId[item.id] = value));
+    this.listOfDisplayData
+      .filter(item => !item.disabled)
+      .forEach(item => (this.mapOfCheckedId[item.id] = value));
     this.refreshStatus();
   }
 
@@ -200,12 +212,15 @@ export class ShipmentsComponent implements OnInit {
   }
 
   handleInvontoryOk(): void {
-    console.log(this.mapOfCheckedId);
 
     let params = {
-      requisitionIdList: Reflect.ownKeys(this.mapOfCheckedId).filter(function (key) {
-        return this.mapOfCheckedId[key] === true;
-      })
+      requisitionIdList: Object.entries(this.mapOfCheckedId)
+        .filter(([key, value]) => value === true)
+        .map(([key, value]) => key)
+    }
+    if (params.requisitionIdList.length == 0) {
+      this.msg.warning("请选择发货")
+      return
     }
     this.btnLoading = true;
     this._http.post(`/api/delivery/add`, params).subscribe((res: any) => {

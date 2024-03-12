@@ -83,7 +83,7 @@
       <h1 class="module_title">
         <span (click)="showDetailPage =false" class="backIcon">&lt;</span>
         申请记录
-        <button style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+        <button class="BSpace" style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
         <button style="float: right;" nz-button (click)="addRemark()">添加备注</button>
 
       </h1>
@@ -139,7 +139,7 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item nzTitle="单据状态">{{ detailData.status ?detailData.status.label :'--' }}
+            <nz-descriptions-item nzTitle="审批状态">{{ detailData.status ?detailData.status.label :'--' }}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="取消人">{{ detailData.cancellationUser ? detailData.cancellationUser:'--' }}
             </nz-descriptions-item>
@@ -157,10 +157,22 @@
               :'--' }}
             </nz-descriptions-item>
 
-            <nz-descriptions-item [nzSpan]="1" nzTitle="申请单状态">{{detailData.approvalStatus.label
+            <nz-descriptions-item [nzSpan]="4" nzTitle="备注">{{detailData.notes ?detailData.notes :'--' }}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item [nzSpan]="1" nzTitle="后台处理状态">{{detailData.approvalStatus.label
               ?detailData.approvalStatus.label :'--' }}
             </nz-descriptions-item>
-            <nz-descriptions-item [nzSpan]="3" nzTitle="取消原因">{{detailData.cancelRemark ?detailData.cancelRemark :'--'
+            <nz-descriptions-item [nzSpan]="1" nzTitle="取消原因">{{detailData.cancelRemark ?detailData.cancelRemark :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="1" nzTitle="取消人">{{detailData.cancellationTime ?detailData.cancellationTime
+              :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="1" nzTitle="取消时间">{{detailData.cancellationUser ?detailData.cancellationUser
+              :'--'
               }}
             </nz-descriptions-item>
             <nz-descriptions-item [nzSpan]="4" nzTitle="办理人备注">{{detailData.opRemark ?detailData.opRemark :'--' }}
@@ -201,7 +213,7 @@
                 <td>{{data.requisitionReason}}</td>
                 <td>
                   <!-- <img :src="{{data.photoList[0].url}}" alt=""> -->
-                  <a href="{{data.photoList[0].url}}" target="_blank">照片</a>
+                  <a (click)="lookUpImg(data.photoList[0].url)">照片</a>
                 </td>
                 <td>{{data.urgencyLevel?.label}}</td>
 
@@ -517,7 +529,7 @@
 
 
   <nz-modal *ngIf="showOperatePage3" [nzVisible]="showOperatePage3" [nzContent]="modalContent"
-    (nzOnCancel)="showOperatePage3 = false" (nzOnOk)="handleOperatePage0Ok3()" nzTitle="备注">
+    (nzOnCancel)="showOperatePage3 = false;operateForm3.reset()" (nzOnOk)="handleOperatePage0Ok3()" nzTitle="备注">
     <ng-template #modalContent>
       <ng-container>
         <form nz-form [formGroup]="operateForm3">
@@ -575,6 +587,12 @@
         </form>
       </ng-container>
     </ng-template>
+  </nz-modal>
+
+
+  <nz-modal [(nzVisible)]="bigImgVisible" nzTitle="查看图片" (nzOnCancel)="bigImgVisible = false" [nzFooter]="null"
+    [nzZIndex]="10000">
+    <img [src]="bigImgSrc" alt="图" [ngStyle]="{ width: '100%' }">
   </nz-modal>
 
 

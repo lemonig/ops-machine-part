@@ -70,7 +70,7 @@
 
 <!-- 发货 -->
 <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
-  (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()" nzWidth="1000">
+  (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()" nzWidth="1000" nzTitle="发货">
   <ng-template #modalContent1>
     <div class="query_warp">
       <div>
@@ -122,7 +122,7 @@
           <td>{{data.unDeliveredQuantity}}</td>
           <td>{{data.deliveredQuantity}}</td>
           <td>{{data.shouldSendQuantity}}</td>
-          <td [ngClass]="{invalidTd:data.shouldSendQuantity < data.shouldSendQuantity }">{{data.inventoryQuantity}}</td>
+          <td [ngClass]="{invalidTd:data.inventoryQuantity < data.shouldSendQuantity }">{{data.inventoryQuantity}}</td>
         </tr>
       </tbody>
     </nz-table>
@@ -217,8 +217,8 @@
     <h2 class="ant-descriptions-title">出库单明细</h2>
     <div class="query_warp">
       <div>
-        <button nz-button nzType="primary" (click)="reCreate()">重新生成</button>
-        <span class="BSpace">出库数量与实际库存不匹配，请点击【重新生成】新的出库单</span>
+        <!-- <button nz-button nzType="primary" (click)="reCreate()">重新生成</button>
+        <span class="BSpace">出库数量与实际库存不匹配，请点击【重新生成】新的出库单</span> -->
       </div>
       <div>
         <button nz-button nzType="default" (click)="export()">导出出库单</button>
@@ -238,7 +238,7 @@
             <th>库存数量</th>
             <th>申请人</th>
             <th>项目号</th>
-            <th>操作</th>
+            <!-- <th>操作</th> -->
           </tr>
         </thead>
         <tbody>
@@ -251,11 +251,11 @@
             <td>{{data.inventoryQuantity}}</td>
             <td>{{data.application}}</td>
             <td>{{data.projectNumber}}</td>
-            <td>
+            <!-- <td>
               <a (click)="modify(data)">编辑</a>
               <span class="divider"></span>
               <a (click)="delete(data.id)">删除</a>
-            </td>
+            </td> -->
           </tr>
         </tbody>
       </nz-table>
