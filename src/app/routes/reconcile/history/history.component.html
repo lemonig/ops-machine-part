@@ -48,7 +48,7 @@
           <tbody>
             <tr *ngFor="let data of basicTable.data index as i">
               <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
-              <td>{{data.requisitionNumber}}</td>
+              <td>{{data.verificationNumber}}</td>
               <td>{{data.registrant}}</td>
               <td>{{data.applicant}}</td>
               <td>{{data.applicantDepartment}}</td>
@@ -70,14 +70,16 @@
       <h1 class="module_title">
         <span (click)="showDetailPage =false" class="backIcon">&lt;</span>
         申请记录
-        <button style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+        <button class="BSpace" style="float: right;" nz-button nzType="danger" (click)="concel()">取消申请单</button>
+        <button style="float: right;" nz-button (click)="addRemark()">添加备注</button>
+
       </h1>
 
       <div class="msg_wrap">
         <div>
           <nz-descriptions nzTitle="申请单信息" [nzColumn]="4">
 
-            <nz-descriptions-item nzTitle="单据号">{{detailData.requisitionNumber ?detailData.requisitionNumber :'--'}}
+            <nz-descriptions-item nzTitle="单据号">{{detailData.verificationNumber ?detailData.verificationNumber :'--'}}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="申请人">{{detailData.applicant ? detailData.applicant :'--'}}
             </nz-descriptions-item>
@@ -87,7 +89,7 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.value :'--'}}
+            <nz-descriptions-item nzTitle="业务归属">{{detailData.businessOwner ? detailData.businessOwner.label :'--'}}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="站点">{{detailData.station ? detailData.station :'--'}}
             </nz-descriptions-item>
@@ -99,7 +101,7 @@
 
             <nz-descriptions-item nzTitle="申请时间">{{detailData.applicationTime| date:'yyyy-MM-dd HH:mm:ss'}}
             </nz-descriptions-item>
-            <nz-descriptions-item nzTitle="还库方式">{{detailData.shippingMethod ?detailData.shippingMethod.value :'--'}}
+            <nz-descriptions-item nzTitle="还库方式">{{detailData.shippingMethod ?detailData.shippingMethod.label :'--'}}
             </nz-descriptions-item>
             <nz-descriptions-item nzTitle="项目编号">{{detailData.projectNumber ?detailData.projectNumber :'--'}}
             </nz-descriptions-item>
@@ -112,7 +114,56 @@
             </nz-descriptions-item>
 
 
+            <nz-descriptions-item [nzSpan]="1" nzTitle="取消人">{{detailData.cancellationUser ?detailData.cancellationUser
+              :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="1" nzTitle="取消时间">{{detailData.cancellationTime ?detailData.cancellationTime
+              :'--'
+              }}
+            </nz-descriptions-item>
+            <nz-descriptions-item [nzSpan]="2" nzTitle="取消原因">{{detailData.cancelRemark ?detailData.cancelRemark :'--'
+              }}
+            </nz-descriptions-item>
+
+
+            <nz-descriptions-item [nzSpan]="4" nzTitle="办理人备注">{{detailData.opRemark ?detailData.opRemark :'--' }}
+            </nz-descriptions-item>
+
           </nz-descriptions>
+        </div>
+
+
+
+        <div id="tableHeight">
+          <nz-table class="table_warp" #basicTable1 [nzData]="detailData.rawDetailsVoList" [nzShowSizeChanger]="true"
+            [nzFrontPagination]="true" [nzShowPagination]="false">
+            <thead>
+              <tr style="position: relative;" appTableScroll>
+                <th>存货编码</th>
+                <th>仪器名称</th>
+                <th>仪器品牌型号</th>
+                <th>物料名称</th>
+                <th>类型</th>
+                <th>计量单位</th>
+                <th>数量</th>
+                <th>故障现象</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of basicTable1.data index as i">
+                <td>{{data.inventoryCode}}</td>
+                <td>{{data.inventoryName}}</td>
+                <td>{{data.instrumentBrandModel}}</td>
+                <td>{{data.materialName}}</td>
+                <td>{{data.materialType?.label}}</td>
+                <td>{{data.unitOfMeasure}}</td>
+                <td>{{data.quantity}}</td>
+                <td>{{data.faultPhenomenon}}</td>
+              </tr>
+            </tbody>
+          </nz-table>
         </div>
 
 
@@ -130,7 +181,7 @@
             <nz-form-item>
               <nz-form-label nzRequired>申请数量</nz-form-label>
               <nz-form-control>
-                <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                <nz-input-number formControlName="verifiedQuantity" [nzMin]="0" [nzStep]="1">
                 </nz-input-number>
               </nz-form-control>
             </nz-form-item>
@@ -174,7 +225,7 @@
                 <td>{{data.inventoryName}}</td>
                 <td>{{data.verifiedQuantity}}</td>
                 <td>{{data.unitOfMeasure}}</td>
-                <td>{{data.requestedQuantity}}</td>
+                <td>{{data.faultPhenomenon}}</td>
 
 
 
@@ -201,7 +252,7 @@
   <!--tab0 存货编码 -->
   <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
     (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
-    nzWidth="1000">
+    nzTitle="存货" nzWidth="1000">
     <ng-template #modalContent1>
       <nz-table class="table_warp" #basicTable [nzData]="tableData3" [(nzPageIndex)]="q3.pageIndex"
         [(nzTotal)]="q3.total" [(nzPageSize)]="q3.pageSize" [nzShowSizeChanger]="true" [nzFrontPagination]="false"
@@ -237,7 +288,7 @@
 
   <!--tab0 存货数量表单 -->
   <nz-modal *ngIf="showOperatePage0" [nzVisible]="showOperatePage0" [nzContent]="modalContent"
-    (nzOnCancel)="showOperatePage0 = false" (nzOnOk)="handleOperatePage0Ok()">
+    (nzOnCancel)="showOperatePage0 = false" (nzOnOk)="handleOperatePage0Ok()" nzTitle="编辑数量">
     <ng-template #modalContent>
       <ng-container>
         <form nz-form [formGroup]="operateForm0">
@@ -246,7 +297,7 @@
               <nz-form-item>
                 <nz-form-label nzRequired nzSpan="6">申请数量</nz-form-label>
                 <nz-form-control nzSpan="18" [nzErrorTip]="errorTpl">
-                  <nz-input-number formControlName="requestedQuantity" [nzMin]="0" [nzStep]="1">
+                  <nz-input-number formControlName="verifiedQuantity" [nzMin]="0" [nzStep]="1">
                   </nz-input-number>
 
                 </nz-form-control>
@@ -258,10 +309,48 @@
     </ng-template>
   </nz-modal>
 
+  <nz-modal *ngIf="showOperatePage1" [nzVisible]="showOperatePage1" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage1 = false;operateForm1.reset()" (nzOnOk)="handleOperatePage0Ok1()" nzTitle="取消申请单">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm1">
+          <nz-form-item>
+            <nz-form-label nzRequired nzSpan="4">取消原因</nz-form-label>
+            <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+              <textarea formControlName="cancelRemark" placeholder="请输入" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                style="width: 100%;">
+                </textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
 
 
 
+  <nz-modal *ngIf="showOperatePage3" [nzVisible]="showOperatePage3" [nzContent]="modalContent"
+    (nzOnCancel)="showOperatePage3 = false;operateForm3.reset()" (nzOnOk)="handleOperatePage0Ok3()" nzTitle="备注">
+    <ng-template #modalContent>
+      <ng-container>
+        <form nz-form [formGroup]="operateForm3">
+          <nz-form-item>
+            <nz-form-label nzRequired nzSpan="4">备注</nz-form-label>
+            <nz-form-control nzSpan="20" [nzErrorTip]="errorTpl">
+              <textarea formControlName="opRemark" placeholder="请输入" [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                style="width: 100%;">
+                </textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </ng-container>
+    </ng-template>
+  </nz-modal>
 
+  <nz-modal [(nzVisible)]="bigImgVisible" nzTitle="查看图片" (nzOnCancel)="bigImgVisible = false" [nzFooter]="null"
+    [nzZIndex]="10000">
+    <img [src]="bigImgSrc" alt="图" [ngStyle]="{ width: '100%' }">
+  </nz-modal>
 
 
   <ng-template #errorTpl let-control>

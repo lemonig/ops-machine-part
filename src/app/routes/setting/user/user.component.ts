@@ -116,8 +116,33 @@ export class UserComponent implements OnInit {
     let data = JSON.parse(JSON.stringify(this.operateForm.value));
     params = data;
     params.id = this.operateId;
-    params.regionCodeList = this.defaultCheckedKeys
+    params.regionCodeList = this.getCheckKey(this.nzTreeComponent.getCheckedNodeList())
     this.modifyData(params);
+  }
+  getCheckKey(treenode) {
+    let res = []
+    treenode.forEach(ele => {
+      if (ele.level == 2) {
+        res.push(ele.key)
+      }
+      if (ele.level == 1) {
+        if (ele.origin.children) {
+          ele.origin.children.forEach(ele1 => {
+            res.push(ele1.key)
+          })
+        }
+      }
+      if (ele.level == 0) {
+        if (ele.origin.children) {
+          ele.origin.children.forEach(ele1 => {
+            ele1.children.forEach(ele2 => {
+              res.push(ele2.key)
+            })
+          })
+        }
+      }
+    })
+    return res
   }
   addData(params: any) {
     this.btnLoading = true;

@@ -209,6 +209,9 @@ export class ShipmentsComponent implements OnInit {
     this.invontoryVis = false;
     this.operateId = null
     this.listOfAllData = []
+    this.projectName = ''
+    this.urgencyLevel = null
+    this.mapOfCheckedId = {}
   }
 
   handleInvontoryOk(): void {
@@ -230,6 +233,7 @@ export class ShipmentsComponent implements OnInit {
         this.msg.success(res.message);
         this.invontoryVis = false
         this.operateId = null
+        this.mapOfCheckedId = {}
       } else {
         this.msg.error(res.message);
       }
@@ -317,24 +321,49 @@ export class ShipmentsComponent implements OnInit {
 
   }
   confirm() {
-    this._http.post(`/api/delivery/confirm`, { id: this.operateId, }).subscribe((res: any) => {
-      if (res.success) {
-        this.msg.success(res.message);
-        this.detail(this.operateId)
-      } else {
-        this.msg.error(res.message);
-      }
+
+    this.modal.confirm({
+      nzContent: '是否确认已发货？',
+      nzOkText: '确认',
+      nzCancelText: '取消',
+      nzTitle: '提示',
+      nzOnOk: () => {
+        this._http.post(`/api/delivery/confirm`, { id: this.operateId, }).subscribe((res: any) => {
+          if (res.success) {
+            this.msg.success(res.message);
+            this.detail(this.operateId)
+          } else {
+            this.msg.error(res.message);
+          }
+        })
+      },
+      nzOnCancel: () => { }
     })
+
   }
   cancel() {
-    this._http.post(`/api/delivery/cancel`, { id: this.operateId, }).subscribe((res: any) => {
-      if (res.success) {
-        this.msg.success(res.message);
-        this.detail(this.operateId)
-      } else {
-        this.msg.error(res.message);
-      }
+
+
+    this.modal.confirm({
+      nzContent: '是否取消发货单？',
+      nzOkText: '确认',
+      nzCancelText: '取消',
+      nzTitle: '提示',
+      nzOnOk: () => {
+
+        this._http.post(`/api/delivery/cancel`, { id: this.operateId, }).subscribe((res: any) => {
+          if (res.success) {
+            this.msg.success(res.message);
+            this.detail(this.operateId)
+          } else {
+            this.msg.error(res.message);
+          }
+        })
+      },
+      nzOnCancel: () => { }
     })
+
+
   }
   reCreate() {
     this._http.post(`/api/delivery/re-generate`, { id: this.operateId, }).subscribe((res: any) => {

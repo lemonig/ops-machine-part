@@ -115,7 +115,7 @@ export class ApplicateComponent implements OnInit {
 
     }
 
-    this.ExcelService.download('/api/accessory_order/list/export', params, '配件核销')
+    this.ExcelService.download('/api/requisition/export', params, '配件申请')
   }
 
 
@@ -328,6 +328,8 @@ export class ApplicateComponent implements OnInit {
 
   handleInvontoryCancel(): void {
     this.invontoryVis = false;
+    this.proname3 = '';
+    this.inventorySelected = { id: '' };
   }
   handleInvontoryOk(): void {
     if (this.inventorySelected.id) {
@@ -338,6 +340,7 @@ export class ApplicateComponent implements OnInit {
       this.msg.warning('请选择')
     }
   }
+
 
 
   // 存货操作
@@ -491,6 +494,7 @@ export class ApplicateComponent implements OnInit {
         this.getTableData2();
         this.showOperatePage2 = false
         this.msg.success(res.message);
+        this.operateForm2.reset()
       } else {
         this.msg.error(res.message);
       }

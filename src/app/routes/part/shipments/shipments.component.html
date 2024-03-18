@@ -25,6 +25,7 @@
           <tr style="position: relative;" appTableScroll>
             <th>序号</th>
             <th>发货单据号</th>
+            <th>申请单据号</th>
             <th>申请人</th>
             <th>申请时间</th>
             <th>运维地区</th>
@@ -44,6 +45,7 @@
         <tbody>
           <tr *ngFor="let data of basicTable3.data index as i">
             <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
+            <td>{{data.shipmentNumber}}</td>
             <td>{{data.requisitionNumber}}</td>
             <td>{{data.applicant}}</td>
             <td>{{data.applicationTime}}</td>
@@ -77,9 +79,9 @@
         <input class="BSpace" style="width:180px;" nz-input placeholder="单据号/申请人" [(ngModel)]="projectName" />
         <nz-select class="BSpace" style="width: 120px;" [(ngModel)]="urgencyLevel">
           <nz-option nzValue="" nzLabel="全部"></nz-option>
-          <nz-option nzValue="0" nzLabel="不紧急"></nz-option>
+          <nz-option nzValue="2" nzLabel="不紧急"></nz-option>
           <nz-option nzValue="1" nzLabel="一般"></nz-option>
-          <nz-option nzValue="2" nzLabel="紧急"></nz-option>
+          <nz-option nzValue="0" nzLabel="紧急"></nz-option>
         </nz-select>
         <button class="BSpace" nz-button nzType="primary" (click)="search1()">查询</button>
 
@@ -175,8 +177,8 @@
       <div>
         <ng-container *ngIf="detailData.shipmentStatus.value === '0'  ">
 
-          <button nz-button nzType="danger" (click)="confirm()" nzGhost>确认发货单</button>
-          <button nz-button nzType="default" (click)="cancel()">取消发货单</button>
+          <button nz-button nzType="primary" (click)="confirm()">确认已发货</button>
+          <button nz-button nzType="danger" (click)="cancel()">取消发货单</button>
         </ng-container>
 
       </div>
@@ -219,6 +221,9 @@
       <div>
         <!-- <button nz-button nzType="primary" (click)="reCreate()">重新生成</button>
         <span class="BSpace">出库数量与实际库存不匹配，请点击【重新生成】新的出库单</span> -->
+        <span style="color: #ff4d4f;">
+          {{detailData.warningText}}
+        </span>
       </div>
       <div>
         <button nz-button nzType="default" (click)="export()">导出出库单</button>
@@ -248,7 +253,9 @@
             <td>{{data.inventoryCode}}</td>
             <td>{{data.inventoryName}}</td>
             <td>{{data.outgoingQuantity}}</td>
-            <td>{{data.inventoryQuantity}}</td>
+            <td [ngClass]="{invalidTd:data.inventoryQuantity < data.outgoingQuantity }">
+
+              {{data.inventoryQuantity}}</td>
             <td>{{data.application}}</td>
             <td>{{data.projectNumber}}</td>
             <!-- <td>

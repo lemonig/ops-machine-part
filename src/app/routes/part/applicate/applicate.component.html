@@ -139,13 +139,14 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item nzTitle="审批状态">{{ detailData.status ?detailData.status.label :'--' }}
+            <nz-descriptions-item nzTitle="审批状态" [nzSpan]="4">{{ detailData.approvalStatus
+              ?detailData.approvalStatus.label :'--' }}
             </nz-descriptions-item>
-            <nz-descriptions-item nzTitle="取消人">{{ detailData.cancellationUser ? detailData.cancellationUser:'--' }}
+            <!-- <nz-descriptions-item nzTitle="取消人">{{ detailData.cancellationUser ? detailData.cancellationUser:'--' }}
             </nz-descriptions-item>
             <nz-descriptions-item [nzSpan]="2" nzTitle="取消时间">{{ detailData.cancellationTime ?
               detailData.cancellationTime:'--' }}
-            </nz-descriptions-item>
+            </nz-descriptions-item> -->
 
             <nz-descriptions-item nzTitle="收件人">{{ detailData.shippingFullname ?detailData.shippingFullname :'--'
               }}</nz-descriptions-item>
@@ -161,8 +162,8 @@
             </nz-descriptions-item>
 
 
-            <nz-descriptions-item [nzSpan]="1" nzTitle="后台处理状态">{{detailData.approvalStatus.label
-              ?detailData.approvalStatus.label :'--' }}
+            <nz-descriptions-item [nzSpan]="1" nzTitle="后台处理状态">{{detailData.status.label
+              ?detailData.status.label :'--' }}
             </nz-descriptions-item>
             <nz-descriptions-item [nzSpan]="1" nzTitle="取消原因">{{detailData.cancelRemark ?detailData.cancelRemark :'--'
               }}
@@ -207,7 +208,7 @@
                 <td>{{data.instrumentBrandModel}}</td>
                 <td>{{data.materialName}}</td>
                 <td>{{data.materialType?.label}}</td>
-                <td>{{data.unitOfMeasure?.label}}</td>
+                <td>{{data.unitOfMeasure}}</td>
                 <td>{{data.quantity}}</td>
                 <td>{{data.requisitionType?.label}}</td>
                 <td>{{data.requisitionReason}}</td>
@@ -392,7 +393,7 @@
                       <tr style="position: relative;" appTableScroll>
                         <th>申请单号</th>
                         <th>存货编码</th>
-                        <th>物料名称</th>
+                        <th>存货名称</th>
                         <th>规格</th>
                         <th>型号</th>
                         <th>核销类型</th>
@@ -407,7 +408,7 @@
                       <tr *ngFor="let data of basicTable.data index as i">
                         <td>{{data.requisitionNumber}}</td>
                         <td>{{data.inventoryCode}}</td>
-                        <td>{{data.materialName}}</td>
+                        <td>{{data.inventoryName}}</td>
                         <td>{{data.specification}}</td>
                         <td>{{data.modelNumber}}</td>
                         <td>{{data.verificationCategory?.label}}</td>
@@ -441,8 +442,7 @@
 
   <!--tab0 存货编码 -->
   <nz-modal *ngIf="invontoryVis" [nzVisible]="invontoryVis" [nzContent]="modalContent1"
-    (nzOnCancel)="invontoryVis = false" (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()"
-    nzTitle="存货" nzWidth="1000">
+    (nzOnCancel)="handleInvontoryCancel()" (nzOnOk)="handleInvontoryOk()" nzTitle="存货" nzWidth="1000">
     <ng-template #modalContent1>
       <div class="query_warp">
         <div>
@@ -486,7 +486,7 @@
 
   <!--tab0 存货数量表单 -->
   <nz-modal *ngIf="showOperatePage0" [nzVisible]="showOperatePage0" [nzContent]="modalContent"
-    (nzOnCancel)="showOperatePage0 = false" (nzOnOk)="handleOperatePage0Ok()">
+    (nzOnCancel)="showOperatePage0 = false;operateForm0.reset()" (nzOnOk)="handleOperatePage0Ok()" nzTitle="存货数量">
     <ng-template #modalContent>
       <ng-container>
         <form nz-form [formGroup]="operateForm0">
@@ -509,7 +509,7 @@
 
 
   <nz-modal *ngIf="showOperatePage1" [nzVisible]="showOperatePage1" [nzContent]="modalContent"
-    (nzOnCancel)="showOperatePage1 = false" (nzOnOk)="handleOperatePage0Ok1()" nzTitle="取消申请单">
+    (nzOnCancel)="showOperatePage1 = false;operateForm1.reset()" (nzOnOk)="handleOperatePage0Ok1()" nzTitle="取消申请单">
     <ng-template #modalContent>
       <ng-container>
         <form nz-form [formGroup]="operateForm1">
@@ -549,7 +549,7 @@
 
   <!-- tab3核销单 -->
   <nz-modal *ngIf="showOperatePage2" [nzVisible]="showOperatePage2" [nzContent]="modalContent2"
-    (nzOnCancel)="showOperatePage2 = false" (nzOnOk)="handleOperatePage2Ok()">
+    (nzOnCancel)="showOperatePage2 = false;operateForm2.reset()" (nzOnOk)="handleOperatePage2Ok()" nzTitle="核销扣减">
     <ng-template #modalContent2>
       <!-- 新建编辑 -->
       <ng-container>

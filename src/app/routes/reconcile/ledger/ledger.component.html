@@ -1,7 +1,7 @@
 <div class="card_warp complain">
   <nz-spin [nzSpinning]="isSpinning">
     <ng-container>
-      <h1 class="module_title">出库台账</h1>
+      <h1 class="module_title">还库台账</h1>
       <div class="query_warp">
         <div>
           <nz-date-picker class="BSpace" [nzDisabledDate]="queryDisabledDate" nzPlaceHolder="请选择" style="width:120px"
@@ -46,8 +46,8 @@
           <tbody>
             <tr *ngFor="let data of basicTable.data index as i">
               <td>{{i + 1 + ((q.pageIndex-1) * q.pageSize)}}</td>
-              <td>{{data.shipmentTime}}</td>
-              <td>{{data.shipmentUserName}}</td>
+              <td>{{data.registrationTime}}</td>
+              <td>{{data.registrant}}</td>
               <td>{{data.application}}</td>
               <td>{{data.applicationDepartment}}</td>
               <td>{{data.inventoryCode}}</td>
@@ -55,9 +55,9 @@
               <td>{{data.specification}}</td>
               <td>{{data.modelNumber}}</td>
               <td>{{data.unitOfMeasure}}</td>
-              <td>{{data.outgoingQuantity}}</td>
-              <td>{{data.materialType?.label}}</td>
-              <td>{{data.shouldVerifiedQuantity}}</td>
+              <td>{{data.verifiedQuantity}}</td>
+              <td>{{data.accessoryCategory}}</td>
+              <td>{{data.verificationCategory.label}}</td>
             </tr>
           </tbody>
         </nz-table>

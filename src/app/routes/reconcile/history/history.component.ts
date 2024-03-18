@@ -111,29 +111,63 @@ export class HistoryComponent implements OnInit {
 
 
 
+
+
   // 详情
   //取消申请
+  showOperatePage1: boolean = false
+  operateForm1: FormGroup = this.fb.group({
+    cancelRemark: [null, [Validators.maxLength(300)]],
+  })
+
   concel() {
-    this.modal.confirm({
-      nzContent: '确定取消该申请单吗？',
-      nzOkText: '确认',
-      nzCancelText: '取消',
-      nzTitle: '删除',
-      nzOnOk: () => {
-        this._http.post(`/api/verification/cancel`, { verificationId: this.verificationId }).subscribe((res: any) => {
-
-          if (res.success) {
-            this.getDetail(this.verificationId)
-            this.msg.success(res.message);
-          } else {
-            this.msg.error(res.message);
-          }
-        })
-      },
-      nzOnCancel: () => { }
-    })
-
+    this.showOperatePage1 = true
   }
+
+  handleOperatePage0Ok1() {
+    let params = this.operateForm1.value
+    params.verificationId = this.verificationId
+    this._http.post(`/api/verification/cancel`, params).subscribe((res: any) => {
+      if (res.success) {
+        this.getDetail(this.verificationId)
+        this.msg.success(res.message);
+        this.showOperatePage1 = false;
+        this.operateForm1.reset()
+      } else {
+        this.msg.error(res.message);
+      }
+    })
+  }
+
+
+
+
+  // 添加备注
+  showOperatePage3: boolean = false
+  operateForm3: FormGroup = this.fb.group({
+    opRemark: [null, [Validators.maxLength(300)]],
+  })
+
+  addRemark() {
+    this.showOperatePage3 = true
+  }
+
+  handleOperatePage0Ok3() {
+    let params = this.operateForm3.value
+    params.verificationId = this.verificationId
+    this._http.post(`/api/verification/opRemark/add`, params).subscribe((res: any) => {
+      if (res.success) {
+        this.getDetail(this.verificationId)
+        this.msg.success(res.message);
+        this.showOperatePage3 = false;
+        this.operateForm3.reset();
+      } else {
+        this.msg.error(res.message);
+      }
+    })
+  }
+
+
 
   showDetailPage: boolean = false;
   operateId: any = null;
@@ -203,7 +237,7 @@ export class HistoryComponent implements OnInit {
 
   operateForm0: FormGroup = this.fb.group({
     inventoryCode: [null, [Validators.required, Validators.maxLength(20)]],
-    requestedQuantity: [null, [Validators.required, Validators.maxLength(20)]],
+    verifiedQuantity: [null, [Validators.required, Validators.maxLength(20)]],
   })
   inventoryCode: string = ''
   showOperatePage0: boolean = false
@@ -278,6 +312,7 @@ export class HistoryComponent implements OnInit {
 
   handleInvontoryCancel(): void {
     this.invontoryVis = false;
+    this.inventorySelected = { id: '' };
   }
   handleInvontoryOk(): void {
     if (this.inventorySelected.id) {
@@ -314,12 +349,12 @@ export class HistoryComponent implements OnInit {
   }
   handleOperatePage0Ok() {
     this.btnLoading = true;
-    if (!this.operateForm0.value.requestedQuantity) {
+    if (!this.operateForm0.value.verifiedQuantity) {
       this.msg.error('填写数量')
       return
     }
     let params = {
-      requestedQuantity: this.operateForm0.value.requestedQuantity,
+      verifiedQuantity: this.operateForm0.value.verifiedQuantity,
       id: this.operateId0
     }
     params.id = this.operateId0
@@ -426,5 +461,11 @@ export class HistoryComponent implements OnInit {
   }
 
 
-
+  // 大图
+  bigImgVisible: boolean = false
+  bigImgSrc: string = ""
+  lookUpImg = (file) => {
+    this.bigImgSrc = file
+    this.bigImgVisible = true;
+  };
 }
